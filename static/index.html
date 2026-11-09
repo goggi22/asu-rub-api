@@ -250,7 +250,7 @@ createApp({
   methods: {
     async loadSelectors(kind) {
       try {
-        const r = await fetch(`/api/selectors?kind=\${kind}`);
+        const r = await fetch(`/api/selectors?kind=${kind}`);
         const j = await r.json();
         this.selectors[kind] = j.items || [];
       } catch (e) { console.error(kind, e); }
@@ -294,7 +294,7 @@ createApp({
       this.loading = true;
       this.error = '';
       try {
-        const r = await fetch(`/api/schedule?type=\${{ groups: 3, teachers: 1, rooms: 2 }[this.kind]}&value=\${encodeURIComponent(this.value)}&date=\${this.date}&interval=\${this.interval}`);
+        const r = await fetch(`/api/schedule?type=${{ groups: 3, teachers: 1, rooms: 2 }[this.kind]}&value=${encodeURIComponent(this.value)}&date=${this.date}&interval=${this.interval}`);
         const j = await r.json();
         if (j.error) throw new Error(j.error);
         this.days = j.days;
