@@ -176,6 +176,25 @@ class Handler(SimpleHTTPRequestHandler):
         parsed = urllib.parse.urlparse(self.path)
         qs = urllib.parse.parse_qs(parsed.query)
 
+        if parsed.path == "/api/health":
+            ok, detail = True, "ok"
+            try:
+                probe = get_selectors("groups")
+                if not probe.get("items"):
+                    ok, detail = False, "empty groups"
+            except Exception as e:
+                ok, detail = False, str(e)[:200]
+            return self.json(
+                {
+                    "status": "ok" if ok else "degraded",
+                    "detail": detail,
+                    "upstream": UPSTREAM,
+                    "groups": len(_selector_cache.get("groups", (0, {}))[1].get("items", [])),
+                    "time": int(time.time()),
+                },
+                200 if ok else 503,
+            )
+
         if parsed.path == "/api/selectors":
             kind = (qs.get("kind") or ["groups"])[0]
             if kind not in SELECTOR_TYPES:
