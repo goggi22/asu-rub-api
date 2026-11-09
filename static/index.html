@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Расписание · РИ АлтГУ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/vue@3.4.21/dist/vue.global.prod.js"></script>
+<style>
+:root {
+  --bg: #0b0e14;
+  --panel: #11151f;
+  --panel-2: #161b28;
+  --line: #232a3a;
+  --text: #e6e9f0;
+  --muted: #8b93a7;
+  --accent: #4f7cff;
+  --accent-2: #7aa2ff;
+  --ok: #3ddc84;
+  --warn: #ffb454;
+  --now: rgba(79, 124, 255, 0.14);
+  --radius: 14px;
+}
+* { box-sizing: border-box; margin: 0; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Inter', system-ui, sans-serif;
+  min-height: 100vh;
+  background-image: radial-gradient(900px 400px at 80% -10%, rgba(79,124,255,.13), transparent),
+                    radial-gradient(700px 350px at 10% 110%, rgba(122,162,255,.07), transparent);
+}
+.wrap { max-width: 1080px; margin: 0 auto; padding: 28px 18px 80px; }
+
+header.top { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-bottom: 26px; }
+.logo { width: 42px; height: 42px; border-radius: 12px; background: linear-gradient(135deg, var(--accent), #9b6bff);
+  display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 18px; }
+header.top h1 { font-size: 20px; font-weight: 700; }
+header.top .sub { color: var(--muted); font-size: 13px; margin-top: 2px; }
+.spacer { flex: 1; }
+
+/* controls */
+.controls { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-bottom: 18px; }
+.seg { display: inline-flex; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 3px; }
+.seg button { border: 0; background: transparent; color: var(--muted); padding: 7px 14px; border-radius: 8px;
+  font: inherit; font-size: 13px; cursor: pointer; transition: .15s; }
+.seg button.on { background: var(--accent); color: #fff; font-weight: 600; }
+.search { flex: 1; min-width: 240px; position: relative; }
+.search input { width: 100%; background: var(--panel); border: 1px solid var(--line); border-radius: 10px;
+  padding: 10px 14px 10px 38px; color: var(--text); font: inherit; font-size: 14px; outline: none; }
+.search input:focus { border-color: var(--accent); }
+.search .icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 14px; }
+.drop { position: absolute; top: calc(100% + 6px); left: 0; right: 0; background: var(--panel-2);
+  border: 1px solid var(--line); border-radius: var(--radius); max-height: 320px; overflow: auto; z-index: 30; }
+.drop .opt { padding: 10px 14px; cursor: pointer; display: flex; justify-content: space-between; gap: 10px; }
+.drop .opt:hover, .drop .opt.active { background: rgba(79,124,255,.12); }
+.drop .opt .t { color: var(--muted); font-size: 12px; }
+
+.nav { display: flex; gap: 8px; align-items: center; }
+.nav button { background: var(--panel); border: 1px solid var(--line); color: var(--text); border-radius: 10px;
+  padding: 8px 14px; font: inherit; cursor: pointer; font-size: 14px; }
+.nav button:hover { border-color: var(--accent); }
+.nav .today { color: var(--accent-2); font-weight: 600; }
+
+.fav { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 8px 12px;
+  color: var(--warn); cursor: pointer; font: inherit; font-size: 14px; }
+.fav.on { border-color: var(--warn); background: rgba(255,180,84,.1); }
+
+/* state */
+.center { text-align: center; color: var(--muted); padding: 90px 0; font-size: 15px; }
+.center .big { font-size: 44px; margin-bottom: 12px; }
+.spin { width: 34px; height: 34px; border: 3px solid var(--line); border-top-color: var(--accent);
+  border-radius: 50%; animation: r 0.8s linear infinite; margin: 0 auto 14px; }
+@keyframes r { to { transform: rotate(360deg); } }
+
+/* days */
+.day { margin-bottom: 26px; }
+.day-head { display: flex; align-items: baseline; gap: 10px; margin-bottom: 12px; }
+.day-head .wd { font-size: 17px; font-weight: 700; }
+.day-head .dt { color: var(--muted); font-size: 13px; }
+.day-head .cnt { margin-left: auto; font-size: 12px; color: var(--muted); background: var(--panel);
+  border: 1px solid var(--line); padding: 3px 10px; border-radius: 20px; }
+.day.is-today .wd::after { content: "сегодня"; font-size: 10px; font-weight: 700; text-transform: uppercase;
+  color: var(--ok); margin-left: 8px; letter-spacing: .5px; }
+
+.lesson { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius);
+  padding: 14px 16px; margin-bottom: 10px; display: flex; gap: 14px; transition: border-color .15s; }
+.lesson:hover { border-color: #33405c; }
+.lesson.now { border-color: var(--accent); background: var(--now); }
+.lesson.past { opacity: .45; }
+.l-num { width: 30px; height: 30px; border-radius: 9px; background: var(--panel-2); border: 1px solid var(--line);
+  display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px; flex-shrink: 0; }
+.lesson.now .l-num { background: var(--accent); color: #fff; border-color: transparent; }
+.l-body { flex: 1; min-width: 0; }
+.l-top { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.l-sub { font-weight: 600; font-size: 15px; }
+.l-kind { font-size: 11px; color: var(--accent-2); border: 1px solid rgba(79,124,255,.35);
+  padding: 2px 8px; border-radius: 6px; white-space: nowrap; }
+.l-meta { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 6px; color: var(--muted); font-size: 13px; }
+.l-meta b { color: var(--text); font-weight: 500; }
+.l-time { text-align: right; flex-shrink: 0; }
+.l-time .s { font-weight: 700; font-size: 14px; }
+.l-time .e { color: var(--muted); font-size: 12px; }
+.equip { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
+.equip span { font-size: 11px; color: var(--muted); border: 1px dashed var(--line); padding: 2px 8px; border-radius: 6px; }
+
+footer { text-align: center; color: var(--muted); font-size: 12px; margin-top: 40px; }
+footer a { color: var(--accent-2); text-decoration: none; }
+
+@media (max-width: 640px) {
+  .lesson { flex-wrap: wrap; }
+  .l-time { order: -1; width: 100%; text-align: left; display: flex; gap: 8px; }
+}
+</style>
+</head>
+<body>
+<div id="app" class="wrap">
+  <header class="top">
+    <div class="logo">РИ</div>
+    <div>
+      <h1>Расписание</h1>
+      <div class="sub">Рубцовский институт (филиал) АлтГУ</div>
+    </div>
+    <div class="spacer"></div>
+    <button v-if="current" class="fav" :class="{on: isFav}" @click="toggleFav">★ {{ isFav ? 'в избранном' : 'в избранное' }}</button>
+  </header>
+
+  <div class="controls">
+    <div class="seg">
+      <button :class="{on: kind==='groups'}" @click="setKind('groups')">Группы</button>
+      <button :class="{on: kind==='teachers'}" @click="setKind('teachers')">Преподаватели</button>
+      <button :class="{on: kind==='rooms'}" @click="setKind('rooms')">Аудитории</button>
+    </div>
+    <div class="seg">
+      <button :class="{on: interval==='1'}" @click="setInterval('1')">День</button>
+      <button :class="{on: interval==='2'}" @click="setInterval('2')">Неделя</button>
+    </div>
+    <div class="search">
+      <span class="icon">⌕</span>
+      <input v-model="query" :placeholder="placeholders[kind]" @focus="showDrop = true"
+             @keydown.escape="showDrop = false">
+      <div v-if="showDrop && filtered.length" class="drop">
+        <div v-for="o in filtered" :key="o.id" class="opt" :class="{active: o.id === value}"
+             @mousedown.prevent="pick(o)">
+          <span>{{ o.name }}</span>
+          <span class="t">{{ o.title }}</span>
+        </div>
+      </div>
+    </div>
+    <div class="nav">
+      <button @click="shift(-1)">‹</button>
+      <button class="today" @click="goToday">Сегодня</button>
+      <button @click="shift(1)">›</button>
+    </div>
+  </div>
+
+  <div v-if="loading" class="center"><div class="spin"></div>тяну с rb.asu.ru…</div>
+
+  <div v-else-if="!current" class="center">
+    <div class="big">📅</div>
+    выбери {{ kind === 'teachers' ? 'преподавателя' : kind === 'rooms' ? 'аудиторию' : 'группу' }} в поиске
+  </div>
+
+  <div v-else-if="error" class="center">
+    <div class="big">⚠️</div>{{ error }}<br><br>
+    <button class="nav-btn" @click="load" style="background:var(--panel);border:1px solid var(--line);color:var(--text);border-radius:10px;padding:8px 18px;cursor:pointer">повторить</button>
+  </div>
+
+  <template v-else>
+    <div v-for="d in days" :key="d.date" class="day" :class="{'is-today': d.date === todayStr}">
+      <div class="day-head">
+        <span class="wd">{{ d.weekday }}</span>
+        <span class="dt">{{ prettyDate(d.date) }}</span>
+        <span v-if="d.lessons.length" class="cnt">{{ d.lessons.length }} пар</span>
+      </div>
+      <div v-if="!d.lessons.length" class="lesson" style="opacity:.5;justify-content:center;color:var(--muted);font-size:13px">
+        пар нет — можно выдыхать
+      </div>
+      <div v-for="l in d.lessons" :key="d.date + l.n" class="lesson"
+           :class="{ now: isNow(d.date, l), past: isPast(d.date, l) }">
+        <div class="l-num">{{ l.n }}</div>
+        <div class="l-body">
+          <div class="l-top" v-for="(it, i) in l.items" :key="i" style="margin-bottom:6px">
+            <span class="l-sub">{{ it.subject || 'Занятие' }}</span>
+            <span v-if="it.kind" class="l-kind">{{ it.kind }}</span>
+          </div>
+          <div class="l-meta">
+            <span v-if="roomsOf(l)">ауд. <b>{{ roomsOf(l) }}</b></span>
+            <span v-if="groupsOf(l)">{{ kind==='groups' ? 'вместе с' : 'группы' }}: <b>{{ groupsOf(l) }}</b></span>
+            <span v-if="teachersOf(l)">{{ it_degree(l) }}<b>{{ teachersOf(l) }}</b></span>
+          </div>
+          <div class="equip" v-if="equipOf(l)">
+            <span v-for="e in equipOf(l)" :key="e">{{ e }}</span>
+          </div>
+        </div>
+        <div class="l-time">
+          <div class="s">{{ l.start }}</div>
+          <div class="e">{{ l.end }}</div>
+        </div>
+      </div>
+    </div>
+  </template>
+
+  <footer>
+    данные: <a href="https://rb.asu.ru/timetable" target="_blank">rb.asu.ru</a> · неофициальный клиент
+  </footer>
+</div>
+
+<script>
+const { createApp } = Vue;
+const pad = n => String(n).padStart(2, '0');
+const fmt = d => `${pad(d.getDate())}.${pad(d.getMonth() + 1)}.${d.getFullYear()}`;
+
+createApp({
+  data() {
+    const fav = JSON.parse(localStorage.getItem('tt.fav') || 'null');
+    return {
+      kind: fav?.kind || 'groups',
+      interval: '2',
+      date: fmt(new Date()),
+      query: '',
+      value: '',
+      current: null,
+      days: [],
+      loading: false,
+      error: '',
+      showDrop: false,
+      selectors: { groups: [], teachers: [], rooms: [] },
+      fav,
+      placeholders: { groups: 'поиск группы, напр. 1235…', teachers: 'поиск преподавателя…', rooms: 'аудитория, напр. 304…' },
+    };
+  },
+  computed: {
+    todayStr() { return fmt(new Date()); },
+    isFav() { return this.fav && this.fav.id === this.value && this.fav.kind === this.kind; },
+    filtered() {
+      const q = this.query.trim().toLowerCase();
+      const list = this.selectors[this.kind] || [];
+      if (!q) return list.slice(0, 40);
+      return list.filter(o => (o.name + ' ' + o.title).toLowerCase().includes(q)).slice(0, 40);
+    },
+  },
+  async mounted() {
+    await this.loadSelectors('groups');
+    this.loadSelectors('teachers');
+    this.loadSelectors('rooms');
+    if (this.fav) this.pick({ id: this.fav.id, name: this.fav.name });
+  },
+  methods: {
+    async loadSelectors(kind) {
+      try {
+        const r = await fetch(`/api/selectors?kind=\${kind}`);
+        const j = await r.json();
+        this.selectors[kind] = j.items || [];
+      } catch (e) { console.error(kind, e); }
+    },
+    setKind(k) {
+      this.kind = k;
+      this.query = '';
+      this.showDrop = true;
+    },
+    setInterval(v) { this.interval = v; this.load(); },
+    pick(o) {
+      this.value = o.id;
+      this.current = o;
+      this.query = o.name;
+      this.showDrop = false;
+      this.load();
+    },
+    toggleFav() {
+      if (this.isFav) { this.fav = null; localStorage.removeItem('tt.fav'); }
+      else { this.fav = { kind: this.kind, id: this.value, name: this.current.name }; localStorage.setItem('tt.fav', JSON.stringify(this.fav)); }
+    },
+    goToday() { this.date = this.todayStr; this.load(); },
+    shift(dir) {
+      const step = this.interval === '2' ? 7 : 1;
+      const d = this.parsedDate();
+      d.setDate(d.getDate() + dir * step);
+      this.date = fmt(d);
+      this.load();
+    },
+    parsedDate() {
+      const [dd, mm, yy] = this.date.split('.').map(Number);
+      return new Date(yy, mm - 1, dd);
+    },
+    prettyDate(s) {
+      const [dd, mm] = s.split('.');
+      const months = ['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
+      return `${+dd} ${months[+mm - 1]}`;
+    },
+    async load() {
+      if (!this.value) return;
+      this.loading = true;
+      this.error = '';
+      try {
+        const r = await fetch(`/api/schedule?type=\${{ groups: 3, teachers: 1, rooms: 2 }[this.kind]}&value=\${encodeURIComponent(this.value)}&date=\${this.date}&interval=\${this.interval}`);
+        const j = await r.json();
+        if (j.error) throw new Error(j.error);
+        this.days = j.days;
+      } catch (e) {
+        this.error = 'не получилось: ' + e.message;
+      } finally {
+        this.loading = false;
+      }
+    },
+    toMin(t) { const [h, m] = t.split(':').map(Number); return h * 60 + m; },
+    isNow(dateStr, l) {
+      if (dateStr !== this.todayStr) return false;
+      const now = new Date();
+      const cur = now.getHours() * 60 + now.getMinutes();
+      return cur >= this.toMin(l.start) && cur < this.toMin(l.end);
+    },
+    isPast(dateStr, l) {
+      if (dateStr !== this.todayStr) return false;
+      const now = new Date();
+      return now.getHours() * 60 + now.getMinutes() >= this.toMin(l.end);
+    },
+    roomsOf(l) { return [...new Set(l.items.flatMap(i => i.rooms))].join(', '); },
+    groupsOf(l) { return [...new Set(l.items.flatMap(i => i.groups))].join(', '); },
+    teachersOf(l) { return [...new Set(l.items.flatMap(i => i.teachers))].join(', '); },
+    it_degree(l) { const d = l.items.map(i => i.degree).filter(Boolean)[0]; return d ? d + ' — ' : ''; },
+    equipOf(l) { return [...new Set(l.equipment || [])]; },
+  },
+}).mount('#app');
+
+document.addEventListener('click', e => {
+  if (!e.target.closest('.search')) {
+    const app = document.querySelector('#app').__vue_app__;
+    app._instance.proxy.showDrop = false;
+  }
+});
+</script>
+</body>
+</html>
