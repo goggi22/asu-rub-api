@@ -4,9 +4,19 @@
 
 Забирает html с `rb.asu.ru`, парсит и отдаёт нормальный JSON. Заодно обходит блокировку запросов из облачной инфраструктуры (Telegram Serverless и т.п.).
 
+[![api](https://img.shields.io/website?url=https%3A%2F%2Fasu.rub22.ru%2Fapi%2Fhealth&label=api&up_message=online&down_message=offline)](https://asu.rub22.ru/api/health)
+
 **Живой инстанс:** https://asu.rub22.ru
 
 ## API
+
+### Статус
+
+```
+GET /api/health
+```
+
+Проверяет доступность апстрима: `{"status": "ok", "groups": 165, ...}` — 200 или 503. Бейдж в шапке README тянется отсюда.
 
 ### Список групп / преподавателей / аудиторий
 
