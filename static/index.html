@@ -4,251 +4,603 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Расписание · РИ АлтГУ</title>
+<meta name="description" content="Расписание занятий Рубцовского института (филиала) АлтГУ — группы, преподаватели, аудитории">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='24' fill='%234f7cff'/><text x='50' y='68' font-size='48' font-weight='800' text-anchor='middle' fill='white' font-family='sans-serif'>РИ</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 <script src="https://unpkg.com/vue@3.4.21/dist/vue.global.prod.js"></script>
 <style>
 :root {
-  --bg: #0b0e14;
-  --panel: #11151f;
-  --panel-2: #161b28;
-  --line: #232a3a;
-  --text: #e6e9f0;
-  --muted: #8b93a7;
+  --bg: #080a10;
+  --bg-soft: #0d1018;
+  --panel: rgba(255,255,255,.035);
+  --panel-solid: #12151f;
+  --panel-hover: rgba(255,255,255,.06);
+  --line: rgba(255,255,255,.08);
+  --line-strong: rgba(255,255,255,.14);
+  --text: #eef1f8;
+  --muted: #8d95ab;
+  --faint: #5c6478;
   --accent: #4f7cff;
-  --accent-2: #7aa2ff;
+  --accent-2: #8b6bff;
   --ok: #3ddc84;
   --warn: #ffb454;
-  --now: rgba(79, 124, 255, 0.14);
-  --radius: 14px;
+  --danger: #ff5c7a;
+  --now-glow: rgba(79,124,255,.22);
+  --r-lg: 20px;
+  --r-md: 14px;
+  --r-sm: 10px;
+  --mono: 'JetBrains Mono', ui-monospace, monospace;
 }
-* { box-sizing: border-box; margin: 0; }
+html[data-theme="light"] {
+  --bg: #f2f4fa;
+  --bg-soft: #e9edf6;
+  --panel: rgba(255,255,255,.75);
+  --panel-solid: #ffffff;
+  --panel-hover: rgba(255,255,255,.95);
+  --line: rgba(15,23,42,.08);
+  --line-strong: rgba(15,23,42,.14);
+  --text: #171c2b;
+  --muted: #5d6578;
+  --faint: #9aa2b8;
+  --now-glow: rgba(79,124,255,.12);
+}
+* { box-sizing: border-box; margin: 0; -webkit-tap-highlight-color: transparent; }
+html { scroll-behavior: smooth; }
 body {
   background: var(--bg);
   color: var(--text);
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
   min-height: 100vh;
-  background-image: radial-gradient(900px 400px at 80% -10%, rgba(79,124,255,.13), transparent),
-                    radial-gradient(700px 350px at 10% 110%, rgba(122,162,255,.07), transparent);
+  font-feature-settings: 'tnum' 1, 'cv05' 1;
+  transition: background .3s, color .3s;
+  overflow-x: hidden;
 }
-.wrap { max-width: 1080px; margin: 0 auto; padding: 28px 18px 80px; }
+body::before {
+  content: '';
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background:
+    radial-gradient(1100px 500px at 85% -5%, rgba(79,124,255,.16), transparent 60%),
+    radial-gradient(800px 400px at -10% 15%, rgba(139,107,255,.12), transparent 60%),
+    radial-gradient(700px 500px at 50% 110%, rgba(79,124,255,.07), transparent);
+}
+html[data-theme="light"] body::before {
+  background:
+    radial-gradient(1100px 500px at 85% -5%, rgba(79,124,255,.14), transparent 60%),
+    radial-gradient(800px 400px at -10% 15%, rgba(139,107,255,.10), transparent 60%);
+}
+.wrap { max-width: 1060px; margin: 0 auto; padding: 0 18px 90px; position: relative; z-index: 1; }
 
-header.top { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-bottom: 26px; }
-.logo { width: 42px; height: 42px; border-radius: 12px; background: linear-gradient(135deg, var(--accent), #9b6bff);
-  display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 18px; }
-header.top h1 { font-size: 20px; font-weight: 700; }
-header.top .sub { color: var(--muted); font-size: 13px; margin-top: 2px; }
+/* ---------- header ---------- */
+header {
+  position: sticky; top: 0; z-index: 50;
+  backdrop-filter: blur(18px) saturate(1.4);
+  -webkit-backdrop-filter: blur(18px) saturate(1.4);
+  background: color-mix(in srgb, var(--bg) 72%, transparent);
+  border-bottom: 1px solid var(--line);
+}
+.head-in { max-width: 1060px; margin: 0 auto; padding: 14px 18px; display: flex; align-items: center; gap: 13px; }
+.logo {
+  width: 40px; height: 40px; border-radius: 13px; flex-shrink: 0;
+  background: linear-gradient(135deg, #4f7cff 0%, #8b6bff 60%, #b96bff 100%);
+  display: grid; place-items: center; font-weight: 900; font-size: 15px; color: #fff;
+  box-shadow: 0 4px 18px rgba(79,124,255,.4), inset 0 1px 0 rgba(255,255,255,.25);
+}
+.head-t h1 { font-size: 17px; font-weight: 800; letter-spacing: -.02em; }
+.head-t .sub { font-size: 11.5px; color: var(--muted); margin-top: 1px; }
 .spacer { flex: 1; }
+.clock { font-family: var(--mono); font-size: 14px; font-weight: 700; color: var(--muted); letter-spacing: .04em; }
+.clock b { color: var(--text); }
+.theme-btn {
+  width: 38px; height: 38px; border-radius: 12px; border: 1px solid var(--line);
+  background: var(--panel); cursor: pointer; font-size: 16px; display: grid; place-items: center;
+  transition: transform .2s, border-color .2s;
+}
+.theme-btn:hover { border-color: var(--line-strong); transform: scale(1.06) rotate(-8deg); }
+.github-link {
+  height: 38px; padding: 0 14px; border-radius: 12px; border: 1px solid var(--line);
+  background: var(--panel); cursor: pointer; display: flex; align-items: center; gap: 7px;
+  color: var(--text); font: inherit; font-size: 13px; font-weight: 600; text-decoration: none;
+  transition: border-color .2s, transform .2s;
+}
+.github-link:hover { border-color: var(--line-strong); transform: translateY(-1px); }
 
-/* controls */
-.controls { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-bottom: 18px; }
-.seg { display: inline-flex; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 3px; }
-.seg button { border: 0; background: transparent; color: var(--muted); padding: 7px 14px; border-radius: 8px;
-  font: inherit; font-size: 13px; cursor: pointer; transition: .15s; }
-.seg button.on { background: var(--accent); color: #fff; font-weight: 600; }
-.search { flex: 1; min-width: 240px; position: relative; }
-.search input { width: 100%; background: var(--panel); border: 1px solid var(--line); border-radius: 10px;
-  padding: 10px 14px 10px 38px; color: var(--text); font: inherit; font-size: 14px; outline: none; }
-.search input:focus { border-color: var(--accent); }
-.search .icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 14px; }
-.drop { position: absolute; top: calc(100% + 6px); left: 0; right: 0; background: var(--panel-2);
-  border: 1px solid var(--line); border-radius: var(--radius); max-height: 320px; overflow: auto; z-index: 30; }
-.drop .opt { padding: 10px 14px; cursor: pointer; display: flex; justify-content: space-between; gap: 10px; }
-.drop .opt:hover, .drop .opt.active { background: rgba(79,124,255,.12); }
-.drop .opt .t { color: var(--muted); font-size: 12px; }
+/* ---------- now bar ---------- */
+.nowbar {
+  margin: 26px 0 20px; padding: 20px 22px; border-radius: var(--r-lg);
+  background: linear-gradient(160deg, rgba(79,124,255,.13), rgba(139,107,255,.07) 55%, transparent),
+              var(--panel);
+  border: 1px solid var(--line);
+  backdrop-filter: blur(10px);
+  position: relative; overflow: hidden;
+  animation: rise .5s .05s cubic-bezier(.2,.8,.2,1) both;
+}
+.nowbar::after {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(139,107,255,.5), transparent);
+}
+.nowbar .label {
+  font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .14em;
+  color: var(--accent-2); display: flex; align-items: center; gap: 7px; margin-bottom: 10px;
+}
+.pulse { width: 7px; height: 7px; border-radius: 50%; background: var(--accent-2); position: relative; }
+.pulse::after {
+  content: ''; position: absolute; inset: -4px; border-radius: 50%;
+  border: 1.5px solid var(--accent-2); opacity: 0;
+  animation: pulse 2s ease-out infinite;
+}
+@keyframes pulse { 0% { transform: scale(.4); opacity: .9; } 100% { transform: scale(1.6); opacity: 0; } }
+.nowbar .big { font-size: clamp(18px, 3.4vw, 26px); font-weight: 800; letter-spacing: -.025em; line-height: 1.2; }
+.nowbar .big em { font-style: normal; color: var(--accent-2); }
+.nowbar .cnt { font-family: var(--mono); font-size: 13px; color: var(--muted); margin-top: 6px; }
+.nowbar .cnt b { color: var(--text); font-weight: 700; }
+.pbar { height: 6px; border-radius: 4px; background: var(--panel-hover); margin-top: 14px; overflow: hidden; border: 1px solid var(--line); }
+.pbar > div {
+  height: 100%; border-radius: 4px;
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+  box-shadow: 0 0 14px rgba(79,124,255,.55);
+  transition: width 1s linear;
+}
 
-.nav { display: flex; gap: 8px; align-items: center; }
-.nav button { background: var(--panel); border: 1px solid var(--line); color: var(--text); border-radius: 10px;
-  padding: 8px 14px; font: inherit; cursor: pointer; font-size: 14px; }
-.nav button:hover { border-color: var(--accent); }
-.nav .today { color: var(--accent-2); font-weight: 600; }
+/* ---------- controls ---------- */
+.controls { display: flex; gap: 9px; flex-wrap: wrap; margin-bottom: 22px; animation: rise .5s .12s cubic-bezier(.2,.8,.2,1) both; }
+.seg {
+  display: inline-flex; background: var(--panel); border: 1px solid var(--line);
+  border-radius: var(--r-md); padding: 4px; gap: 2px; backdrop-filter: blur(10px);
+}
+.seg button {
+  border: 0; background: transparent; color: var(--muted); padding: 8px 14px;
+  border-radius: var(--r-sm); font: inherit; font-size: 13px; font-weight: 600;
+  cursor: pointer; transition: .18s; white-space: nowrap;
+}
+.seg button:hover { color: var(--text); }
+.seg button.on {
+  background: linear-gradient(135deg, var(--accent), #6d8dff);
+  color: #fff; font-weight: 700;
+  box-shadow: 0 3px 14px rgba(79,124,255,.35);
+}
+.search { flex: 1; min-width: 220px; position: relative; }
+.search input {
+  width: 100%; background: var(--panel); border: 1px solid var(--line);
+  border-radius: var(--r-md); padding: 12px 14px 12px 40px;
+  color: var(--text); font: inherit; font-size: 14px; outline: none;
+  backdrop-filter: blur(10px); transition: border-color .2s, box-shadow .2s;
+}
+.search input:focus { border-color: var(--accent); box-shadow: 0 0 0 4px rgba(79,124,255,.15); }
+.search input::placeholder { color: var(--faint); }
+.search .icon { position: absolute; left: 13px; top: 50%; transform: translateY(-50%); color: var(--faint); font-size: 15px; pointer-events: none; }
+.drop {
+  position: absolute; top: calc(100% + 8px); left: 0; right: 0;
+  background: var(--panel-solid); border: 1px solid var(--line-strong);
+  border-radius: var(--r-lg); max-height: 340px; overflow: auto; z-index: 40;
+  box-shadow: 0 24px 60px rgba(0,0,0,.45);
+  animation: dropIn .18s cubic-bezier(.2,.8,.2,1) both;
+}
+@keyframes dropIn { from { opacity: 0; transform: translateY(-6px) scale(.98); } }
+.drop .opt {
+  padding: 11px 16px; cursor: pointer; display: flex; justify-content: space-between;
+  align-items: center; gap: 10px; transition: background .12s;
+}
+.drop .opt:hover, .drop .opt.sel { background: rgba(79,124,255,.14); }
+.drop .opt .nm { font-weight: 600; font-size: 14px; }
+.drop .opt .tt { color: var(--muted); font-size: 12px; text-align: right; }
+.nav { display: flex; gap: 6px; }
+.nav button {
+  background: var(--panel); border: 1px solid var(--line); color: var(--text);
+  border-radius: var(--r-md); min-width: 42px; height: 46px; font: inherit;
+  font-size: 15px; cursor: pointer; transition: .18s; backdrop-filter: blur(10px);
+}
+.nav button:hover { border-color: var(--accent); transform: translateY(-1px); }
+.nav .today { color: var(--accent-2); font-weight: 700; font-size: 13px; padding: 0 14px; }
 
-.fav { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 8px 12px;
-  color: var(--warn); cursor: pointer; font: inherit; font-size: 14px; }
-.fav.on { border-color: var(--warn); background: rgba(255,180,84,.1); }
+/* ---------- states ---------- */
+.center { text-align: center; color: var(--muted); padding: 100px 0; font-size: 15px; }
+.center .big { font-size: 52px; margin-bottom: 16px; filter: drop-shadow(0 6px 24px rgba(79,124,255,.35)); }
 
-/* state */
-.center { text-align: center; color: var(--muted); padding: 90px 0; font-size: 15px; }
-.center .big { font-size: 44px; margin-bottom: 12px; }
-.spin { width: 34px; height: 34px; border: 3px solid var(--line); border-top-color: var(--accent);
-  border-radius: 50%; animation: r 0.8s linear infinite; margin: 0 auto 14px; }
-@keyframes r { to { transform: rotate(360deg); } }
+/* skeleton */
+.skel-group { margin-bottom: 30px; }
+.skel-title { height: 20px; width: 220px; border-radius: 8px; margin-bottom: 14px; }
+.skel-card { height: 74px; border-radius: var(--r-lg); margin-bottom: 10px; }
+.sk { background: linear-gradient(100deg, var(--panel) 40%, var(--panel-hover) 50%, var(--panel) 60%);
+  background-size: 200% 100%; animation: shimmer 1.4s infinite linear; border: 1px solid var(--line); }
+@keyframes shimmer { to { background-position: -200% 0; } }
 
-/* days */
-.day { margin-bottom: 26px; }
-.day-head { display: flex; align-items: baseline; gap: 10px; margin-bottom: 12px; }
-.day-head .wd { font-size: 17px; font-weight: 700; }
+/* ---------- days ---------- */
+.day { margin-bottom: 34px; animation: rise .45s cubic-bezier(.2,.8,.2,1) both; }
+.day-head { display: flex; align-items: baseline; gap: 11px; margin-bottom: 13px; padding: 0 2px; }
+.day-head .wd { font-size: 19px; font-weight: 800; letter-spacing: -.02em; }
 .day-head .dt { color: var(--muted); font-size: 13px; }
-.day-head .cnt { margin-left: auto; font-size: 12px; color: var(--muted); background: var(--panel);
-  border: 1px solid var(--line); padding: 3px 10px; border-radius: 20px; }
-.day.is-today .wd::after { content: "сегодня"; font-size: 10px; font-weight: 700; text-transform: uppercase;
-  color: var(--ok); margin-left: 8px; letter-spacing: .5px; }
+.day-head .cnt {
+  margin-left: auto; font-size: 11.5px; font-weight: 700; color: var(--muted);
+  background: var(--panel); border: 1px solid var(--line);
+  padding: 4px 11px; border-radius: 20px;
+}
+.day.is-today .wd { color: var(--accent-2); }
+.day.is-today .wd::after {
+  content: 'сегодня'; font-size: 9.5px; font-weight: 800; text-transform: uppercase;
+  color: var(--ok); margin-left: 9px; letter-spacing: .12em; vertical-align: 2px;
+}
+.free-day {
+  padding: 26px; text-align: center; color: var(--muted); font-size: 14px;
+  background: var(--panel); border: 1px dashed var(--line-strong); border-radius: var(--r-lg);
+}
 
-.lesson { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius);
-  padding: 14px 16px; margin-bottom: 10px; display: flex; gap: 14px; transition: border-color .15s; }
-.lesson:hover { border-color: #33405c; }
-.lesson.now { border-color: var(--accent); background: var(--now); }
-.lesson.past { opacity: .45; }
-.l-num { width: 30px; height: 30px; border-radius: 9px; background: var(--panel-2); border: 1px solid var(--line);
-  display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px; flex-shrink: 0; }
-.lesson.now .l-num { background: var(--accent); color: #fff; border-color: transparent; }
+/* lesson card */
+.lesson {
+  background: var(--panel); border: 1px solid var(--line); border-radius: var(--r-lg);
+  padding: 16px 18px; margin-bottom: 10px; display: flex; gap: 15px;
+  backdrop-filter: blur(8px);
+  transition: border-color .2s, transform .2s, box-shadow .2s, opacity .3s;
+  position: relative; overflow: hidden;
+}
+.lesson:hover {
+  border-color: var(--line-strong); transform: translateY(-2px);
+  box-shadow: 0 10px 34px rgba(0,0,0,.25);
+}
+.lesson.now {
+  border-color: rgba(79,124,255,.55);
+  background: linear-gradient(135deg, var(--now-glow), transparent 45%), var(--panel);
+  box-shadow: 0 0 0 1px rgba(79,124,255,.25), 0 8px 40px rgba(79,124,255,.18);
+}
+.lesson.now::before {
+  content: ''; position: absolute; left: 0; top: 14px; bottom: 14px; width: 3px;
+  border-radius: 0 3px 3px 0; background: linear-gradient(var(--accent), var(--accent-2));
+  box-shadow: 0 0 12px rgba(79,124,255,.8);
+}
+.lesson.past { opacity: .42; }
+.lesson.past:hover { opacity: .75; }
+.l-num {
+  width: 34px; height: 34px; border-radius: 11px; flex-shrink: 0;
+  background: var(--panel-hover); border: 1px solid var(--line);
+  display: grid; place-items: center; font-family: var(--mono); font-weight: 700; font-size: 14px;
+  margin-top: 1px;
+}
+.lesson.now .l-num {
+  background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: #fff;
+  border-color: transparent; box-shadow: 0 4px 14px rgba(79,124,255,.4);
+}
 .l-body { flex: 1; min-width: 0; }
 .l-top { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
-.l-sub { font-weight: 600; font-size: 15px; }
-.l-kind { font-size: 11px; color: var(--accent-2); border: 1px solid rgba(79,124,255,.35);
-  padding: 2px 8px; border-radius: 6px; white-space: nowrap; }
-.l-meta { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 6px; color: var(--muted); font-size: 13px; }
-.l-meta b { color: var(--text); font-weight: 500; }
-.l-time { text-align: right; flex-shrink: 0; }
-.l-time .s { font-weight: 700; font-size: 14px; }
-.l-time .e { color: var(--muted); font-size: 12px; }
-.equip { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
-.equip span { font-size: 11px; color: var(--muted); border: 1px dashed var(--line); padding: 2px 8px; border-radius: 6px; }
+.l-sub { font-weight: 700; font-size: 15.5px; letter-spacing: -.01em; }
+.l-kind {
+  font-size: 10.5px; font-weight: 700; padding: 3px 9px; border-radius: 7px;
+  white-space: nowrap; letter-spacing: .02em; text-transform: lowercase;
+}
+.k-lekciya     { color: #7aa2ff; background: rgba(79,124,255,.13); border: 1px solid rgba(79,124,255,.3); }
+.k-praktichesk { color: #b96bff; background: rgba(139,107,255,.13); border: 1px solid rgba(139,107,255,.3); }
+.k-laboratorn  { color: #3ddc84; background: rgba(61,220,132,.12);  border: 1px solid rgba(61,220,132,.3); }
+.k-ekzamen, .k-zachet, .k-zachyot { color: #ff5c7a; background: rgba(255,92,122,.12); border: 1px solid rgba(255,92,122,.3); }
+.k-konsultaciya { color: #ffb454; background: rgba(255,180,84,.12); border: 1px solid rgba(255,180,84,.3); }
+.l-kind.k-def  { color: var(--muted); background: var(--panel-hover); border: 1px solid var(--line); }
+.l-meta { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 7px; color: var(--muted); font-size: 12.5px; }
+.l-meta b { color: var(--text); font-weight: 600; }
+.l-meta .chip { display: inline-flex; align-items: center; gap: 5px; }
+.l-time { text-align: right; flex-shrink: 0; align-self: flex-start; }
+.l-time .s { font-family: var(--mono); font-weight: 700; font-size: 15px; letter-spacing: -.01em; }
+.l-time .e { font-family: var(--mono); color: var(--faint); font-size: 12px; margin-top: 2px; }
+.l-time .left {
+  font-family: var(--mono); font-size: 10.5px; font-weight: 700; color: var(--accent-2);
+  margin-top: 5px; animation: blink 2s ease-in-out infinite;
+}
+@keyframes blink { 50% { opacity: .55; } }
+.equip { display: flex; gap: 6px; margin-top: 9px; flex-wrap: wrap; }
+.equip span {
+  font-size: 10.5px; color: var(--faint); border: 1px dashed var(--line-strong);
+  padding: 2.5px 8px; border-radius: 6px;
+}
 
-footer { text-align: center; color: var(--muted); font-size: 12px; margin-top: 40px; }
-footer a { color: var(--accent-2); text-decoration: none; }
+/* footer */
+footer {
+  text-align: center; color: var(--faint); font-size: 12px; margin-top: 50px;
+  padding-top: 24px; border-top: 1px solid var(--line);
+  display: flex; flex-direction: column; gap: 6px; align-items: center;
+}
+footer a { color: var(--muted); text-decoration: none; transition: color .2s; }
+footer a:hover { color: var(--accent-2); }
+footer .row { display: flex; gap: 18px; }
+
+@keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+
+.toast {
+  position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px);
+  background: var(--panel-solid); border: 1px solid var(--line-strong); color: var(--text);
+  padding: 11px 20px; border-radius: 14px; font-size: 13.5px; font-weight: 600;
+  box-shadow: 0 18px 50px rgba(0,0,0,.5); z-index: 100;
+  transition: transform .3s cubic-bezier(.2,.8,.2,1);
+}
+.toast.show { transform: translateX(-50%) translateY(0); }
 
 @media (max-width: 640px) {
-  .lesson { flex-wrap: wrap; }
-  .l-time { order: -1; width: 100%; text-align: left; display: flex; gap: 8px; }
+  .lesson { flex-wrap: wrap; padding: 14px; }
+  .l-time { order: -1; width: 100%; display: flex; gap: 10px; align-items: baseline; }
+  .l-time .e { margin-top: 0; }
+  .github-link span { display: none; }
+  .github-link { padding: 0 11px; }
+  .head-t .sub { display: none; }
 }
 </style>
 </head>
 <body>
-<div id="app" class="wrap">
-  <header class="top">
-    <div class="logo">РИ</div>
-    <div>
-      <h1>Расписание</h1>
-      <div class="sub">Рубцовский институт (филиал) АлтГУ</div>
+<div id="app">
+  <header>
+    <div class="head-in">
+      <div class="logo">РИ</div>
+      <div class="head-t">
+        <h1>Расписание</h1>
+        <div class="sub">Рубцовский институт (филиал) АлтГУ</div>
+      </div>
+      <div class="spacer"></div>
+      <div class="clock" v-if="clock"><b>{{ clock }}</b></div>
+      <button class="theme-btn" @click="toggleTheme" :title="theme === 'dark' ? 'светлая тема' : 'тёмная тема'">
+        {{ theme === 'dark' ? '☀️' : '🌙' }}
+      </button>
+      <a class="github-link" href="https://github.com/goggi22/asu-rub-api" target="_blank" rel="noopener">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
+        <span>github</span>
+      </a>
     </div>
-    <div class="spacer"></div>
-    <button v-if="current" class="fav" :class="{on: isFav}" @click="toggleFav">★ {{ isFav ? 'в избранном' : 'в избранное' }}</button>
   </header>
 
-  <div class="controls">
-    <div class="seg">
-      <button :class="{on: kind==='groups'}" @click="setKind('groups')">Группы</button>
-      <button :class="{on: kind==='teachers'}" @click="setKind('teachers')">Преподаватели</button>
-      <button :class="{on: kind==='rooms'}" @click="setKind('rooms')">Аудитории</button>
-    </div>
-    <div class="seg">
-      <button :class="{on: interval==='1'}" @click="setInterval('1')">День</button>
-      <button :class="{on: interval==='2'}" @click="setInterval('2')">Неделя</button>
-    </div>
-    <div class="search">
-      <span class="icon">⌕</span>
-      <input v-model="query" :placeholder="placeholders[kind]" @focus="showDrop = true"
-             @keydown.escape="showDrop = false">
-      <div v-if="showDrop && filtered.length" class="drop">
-        <div v-for="o in filtered" :key="o.id" class="opt" :class="{active: o.id === value}"
-             @mousedown.prevent="pick(o)">
-          <span>{{ o.name }}</span>
-          <span class="t">{{ o.title }}</span>
-        </div>
+  <div class="wrap">
+    <!-- сейчас -->
+    <div class="nowbar" v-if="current">
+      <div class="label"><span class="pulse"></span> сейчас</div>
+      <div class="big" v-if="nowState.type === 'lesson'">
+        {{ nowState.lesson.subject || 'Занятие' }} <em>· до конца {{ nowState.left }}</em>
+      </div>
+      <div class="big" v-else-if="nowState.type === 'break'">
+        перемена <em>· до «{{ nowState.next.subject }}» {{ nowState.left }}</em>
+      </div>
+      <div class="big" v-else-if="nowState.type === 'before'">
+        пары ещё не начались <em>· первая в {{ nowState.next?.start || '—' }}</em>
+      </div>
+      <div class="big" v-else-if="nowState.type === 'after'">пары на сегодня закончились 🎉</div>
+      <div class="big" v-else>свободный день — пар нет 🎉</div>
+
+      <div class="pbar" v-if="nowState.progress !== null"><div :style="{ width: nowState.progress + '%' }"></div></div>
+      <div class="cnt" v-if="nowState.type === 'lesson'">
+        {{ nowState.lesson.kind }} · ауд. <b>{{ nowState.lesson.rooms.join(', ') || '—' }}</b>
+      </div>
+      <div class="cnt" v-else-if="nowState.next && nowState.type === 'break'">
+        следующая: {{ nowState.next.start }} · ауд. <b>{{ nowState.next.rooms.join(', ') || '—' }}</b>
       </div>
     </div>
-    <div class="nav">
-      <button @click="shift(-1)">‹</button>
-      <button class="today" @click="goToday">Сегодня</button>
-      <button @click="shift(1)">›</button>
-    </div>
-  </div>
 
-  <div v-if="loading" class="center"><div class="spin"></div>тяну с rb.asu.ru…</div>
-
-  <div v-else-if="!current" class="center">
-    <div class="big">📅</div>
-    выбери {{ kind === 'teachers' ? 'преподавателя' : kind === 'rooms' ? 'аудиторию' : 'группу' }} в поиске
-  </div>
-
-  <div v-else-if="error" class="center">
-    <div class="big">⚠️</div>{{ error }}<br><br>
-    <button class="nav-btn" @click="load" style="background:var(--panel);border:1px solid var(--line);color:var(--text);border-radius:10px;padding:8px 18px;cursor:pointer">повторить</button>
-  </div>
-
-  <template v-else>
-    <div v-for="d in days" :key="d.date" class="day" :class="{'is-today': d.date === todayStr}">
-      <div class="day-head">
-        <span class="wd">{{ d.weekday }}</span>
-        <span class="dt">{{ prettyDate(d.date) }}</span>
-        <span v-if="d.lessons.length" class="cnt">{{ d.lessons.length }} пар</span>
+    <!-- контролы -->
+    <div class="controls">
+      <div class="seg">
+        <button :class="{on: kind==='groups'}" @click="setKind('groups')">Группы</button>
+        <button :class="{on: kind==='teachers'}" @click="setKind('teachers')">Преподаватели</button>
+        <button :class="{on: kind==='rooms'}" @click="setKind('rooms')">Аудитории</button>
       </div>
-      <div v-if="!d.lessons.length" class="lesson" style="opacity:.5;justify-content:center;color:var(--muted);font-size:13px">
-        пар нет — можно выдыхать
+      <div class="seg">
+        <button :class="{on: interval==='1'}" @click="setInterval('1')">День</button>
+        <button :class="{on: interval==='2'}" @click="setInterval('2')">Неделя</button>
+        <button :class="{on: interval==='3'}" @click="setInterval('3')">Месяц</button>
       </div>
-      <div v-for="l in d.lessons" :key="d.date + l.n" class="lesson"
-           :class="{ now: isNow(d.date, l), past: isPast(d.date, l) }">
-        <div class="l-num">{{ l.n }}</div>
-        <div class="l-body">
-          <div class="l-top" v-for="(it, i) in l.items" :key="i" style="margin-bottom:6px">
-            <span class="l-sub">{{ it.subject || 'Занятие' }}</span>
-            <span v-if="it.kind" class="l-kind">{{ it.kind }}</span>
-          </div>
-          <div class="l-meta">
-            <span v-if="roomsOf(l)">ауд. <b>{{ roomsOf(l) }}</b></span>
-            <span v-if="groupsOf(l)">{{ kind==='groups' ? 'вместе с' : 'группы' }}: <b>{{ groupsOf(l) }}</b></span>
-            <span v-if="teachersOf(l)">{{ it_degree(l) }}<b>{{ teachersOf(l) }}</b></span>
-          </div>
-          <div class="equip" v-if="equipOf(l)">
-            <span v-for="e in equipOf(l)" :key="e">{{ e }}</span>
+      <div class="search">
+        <span class="icon">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.35-4.35"/></svg>
+        </span>
+        <input v-model="query" :placeholder="placeholders[kind]" @focus="showDrop = true"
+               @keydown.escape="showDrop = false" ref="searchEl">
+        <div v-if="showDrop && filtered.length" class="drop">
+          <div v-for="o in filtered" :key="o.id" class="opt" :class="{sel: o.id === value}"
+               @mousedown.prevent="pick(o)">
+            <span class="nm">{{ o.name }}</span>
+            <span class="tt">{{ o.title }}</span>
           </div>
         </div>
-        <div class="l-time">
-          <div class="s">{{ l.start }}</div>
-          <div class="e">{{ l.end }}</div>
-        </div>
+      </div>
+      <div class="nav">
+        <button @click="shift(-1)" title="назад">‹</button>
+        <button class="today" @click="goToday">сегодня</button>
+        <button @click="shift(1)" title="вперёд">›</button>
       </div>
     </div>
-  </template>
 
-  <footer>
-    данные: <a href="https://rb.asu.ru/timetable" target="_blank">rb.asu.ru</a> · неофициальный клиент
-  </footer>
+    <!-- загрузка -->
+    <div v-if="loading" class="skel-group">
+      <div class="skel-title sk"></div>
+      <div class="skel-card sk" v-for="i in 4" :key="i"></div>
+    </div>
+
+    <!-- пусто -->
+    <div v-else-if="!current" class="center">
+      <div class="big">📅</div>
+      выбери {{ kind === 'teachers' ? 'преподавателя' : kind === 'rooms' ? 'аудиторию' : 'группу' }} в поиске
+      <div style="font-size:12.5px;margin-top:6px;color:var(--faint)">например, 1235</div>
+    </div>
+
+    <!-- ошибка -->
+    <div v-else-if="error" class="center">
+      <div class="big">⚠️</div>{{ error }}<br><br>
+      <button @click="load" style="background:var(--panel);border:1px solid var(--line-strong);color:var(--text);border-radius:12px;padding:9px 20px;cursor:pointer;font:inherit;font-weight:600">повторить</button>
+    </div>
+
+    <!-- дни -->
+    <template v-else>
+      <div v-for="(d, di) in visibleDays" :key="d.date" class="day"
+           :class="{'is-today': d.date === todayStr}"
+           :style="{ animationDelay: (di * 0.06) + 's' }">
+        <div class="day-head">
+          <span class="wd">{{ d.weekday }}</span>
+          <span class="dt">{{ prettyDate(d.date) }}</span>
+          <span v-if="d.lessons.length" class="cnt">{{ d.lessons.length }} {{ plural(d.lessons.length) }}</span>
+        </div>
+        <div v-if="!d.lessons.length" class="free-day">пар нет — можно выдыхать</div>
+        <div v-for="l in d.lessons" :key="d.date + l.n" class="lesson"
+             :class="{ now: isNow(d.date, l), past: isPast(d.date, l) }">
+          <div class="l-num">{{ l.n }}</div>
+          <div class="l-body">
+            <div class="l-top" v-for="(it, i) in l.items" :key="i" style="margin-bottom:5px">
+              <span class="l-sub">{{ it.subject || 'Занятие' }}</span>
+              <span v-if="it.kind" class="l-kind" :class="kindClass(it.kind)">{{ it.kind.toLowerCase() }}</span>
+            </div>
+            <div class="l-meta">
+              <span class="chip" v-if="roomsOf(l)">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21V8l9-5 9 5v13"/><path d="M9 21v-8h6v8"/></svg>
+                ауд. <b>{{ roomsOf(l) }}</b>
+              </span>
+              <span class="chip" v-if="groupsOf(l)">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c0-3.6 2.9-6 6.5-6s6.5 2.4 6.5 6"/><circle cx="17.5" cy="9.5" r="2.5"/><path d="M16 14.5c2.9 0 5.5 2 5.5 5"/></svg>
+                {{ kind==='groups' ? 'вместе с' : 'группы' }}: <b>{{ groupsOf(l) }}</b>
+              </span>
+              <span class="chip" v-if="teachersOf(l)">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg>
+                {{ degOf(l) }}<b>{{ teachersOf(l) }}</b>
+              </span>
+            </div>
+            <div class="equip" v-if="equipOf(l)">
+              <span v-for="e in equipOf(l)" :key="e">{{ e }}</span>
+            </div>
+          </div>
+          <div class="l-time">
+            <div class="s">{{ l.start }}</div>
+            <div class="e">{{ l.end }}</div>
+            <div class="left" v-if="isNow(d.date, l)">−{{ leftOf(l) }}</div>
+          </div>
+        </div>
+      </div>
+    </template>
+
+    <footer v-if="current">
+      <div class="row">
+        <a href="https://rb.asu.ru/timetable" target="_blank" rel="noopener">rb.asu.ru</a>
+        <a href="https://github.com/goggi22/asu-rub-api" target="_blank" rel="noopener">api</a>
+        <a href="https://github.com/goggi22/asu-rub-bot" target="_blank" rel="noopener">tg-бот</a>
+      </div>
+      <div>неофициальный клиент · расписание может меняться, сверяйтесь с оригиналом</div>
+    </footer>
+  </div>
+
+  <div class="toast" :class="{show: toast}">{{ toast }}</div>
 </div>
 
 <script>
 const { createApp } = Vue;
 const pad = n => String(n).padStart(2, '0');
 const fmt = d => `${pad(d.getDate())}.${pad(d.getMonth() + 1)}.${d.getFullYear()}`;
+const KIND_CLASS = [
+  ['лекц', 'k-lekciya'], ['практ', 'k-praktichesk'], ['лаб', 'k-laboratorn'],
+  ['экзамен', 'k-ekzamen'], ['зачёт', 'k-zachyot'], ['зачет', 'k-zachet'],
+  ['консульт', 'k-konsultaciya'],
+];
 
 createApp({
   data() {
     const fav = JSON.parse(localStorage.getItem('tt.fav') || 'null');
     return {
+      theme: localStorage.getItem('tt.theme') || 'dark',
       kind: fav?.kind || 'groups',
       interval: '2',
       date: fmt(new Date()),
-      query: '',
-      value: '',
-      current: null,
-      days: [],
-      loading: false,
-      error: '',
-      showDrop: false,
+      query: '', value: '', current: null,
+      days: [], loading: false, error: '',
+      showDrop: false, toast: '',
       selectors: { groups: [], teachers: [], rooms: [] },
-      fav,
+      fav, clock: '', tick: Date.now(),
       placeholders: { groups: 'поиск группы, напр. 1235…', teachers: 'поиск преподавателя…', rooms: 'аудитория, напр. 304…' },
     };
   },
   computed: {
     todayStr() { return fmt(new Date()); },
-    isFav() { return this.fav && this.fav.id === this.value && this.fav.kind === this.kind; },
+    todayLessons() {
+      const d = this.days.find(x => x.date === this.todayStr);
+      return d ? d.lessons : [];
+    },
+    nowState() {
+      this.tick; // реактивность на секунду
+      const now = new Date();
+      const cur = now.getHours() * 60 + now.getMinutes() + now.getSeconds() / 60;
+      const lessons = this.todayLessons;
+      if (!this.current) return { type: 'none', progress: null, next: null, lesson: null };
+      if (!lessons.length) return { type: 'free', progress: null, next: null, lesson: null };
+      const m = t => { const [h, mm] = t.split(':').map(Number); return h * 60 + mm; };
+      for (const l of lessons) {
+        if (cur >= m(l.start) && cur < m(l.end)) {
+          const it = l.items[0];
+          const total = m(l.end) - m(l.start);
+          return {
+            type: 'lesson',
+            lesson: { subject: it.subject, kind: (it.kind || '').toLowerCase(), rooms: it.rooms },
+            left: this.humanMin(m(l.end) - cur),
+            progress: Math.min(100, Math.round((cur - m(l.start)) / total * 100)),
+          };
+        }
+      }
+      const next = lessons.find(l => m(l.start) > cur);
+      if (next) {
+        const it = next.items[0];
+        return {
+          type: cur < m(lessons[0].start) ? 'before' : 'break',
+          next: { subject: it.subject, start: next.start, rooms: it.rooms },
+          left: this.humanMin(m(next.start) - cur),
+          progress: null,
+        };
+      }
+      return { type: 'after', progress: null, next: null, lesson: null };
+    },
     filtered() {
       const q = this.query.trim().toLowerCase();
       const list = this.selectors[this.kind] || [];
       if (!q) return list.slice(0, 40);
       return list.filter(o => (o.name + ' ' + o.title).toLowerCase().includes(q)).slice(0, 40);
     },
+    visibleDays() {
+      return this.interval === '3' ? this.days.filter(d => d.lessons.length) : this.days;
+    },
   },
   async mounted() {
+    document.documentElement.dataset.theme = this.theme;
+    this.clockTick();
+    setInterval(() => { this.clock = ''; this.$nextTick(() => this.clockTick()); this.tick = Date.now(); }, 1000);
+    document.addEventListener('click', e => { if (!e.target.closest('.search')) this.showDrop = false; });
+
     await this.loadSelectors('groups');
     this.loadSelectors('teachers');
     this.loadSelectors('rooms');
-    if (this.fav) this.pick({ id: this.fav.id, name: this.fav.name });
+    const p = new URLSearchParams(location.search);
+    const qKind = p.get('kind'), qValue = p.get('value');
+    if (qKind && qValue && this.selectors[qKind]) {
+      const found = this.selectors[qKind].find(o => o.id === qValue);
+      if (found) { this.kind = qKind; this.pick(found); return; }
+    }
+    if (this.fav) {
+      await this.loadSelectors(this.fav.kind);
+      const found = (this.selectors[this.fav.kind] || []).find(o => o.id === this.fav.id);
+      if (found) { this.kind = this.fav.kind; this.pick(found, true); return; }
+    }
   },
   methods: {
+    clockTick() {
+      const d = new Date();
+      this.clock = `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+    },
+    humanMin(mins) {
+      mins = Math.max(0, Math.round(mins));
+      const h = Math.floor(mins / 60), m = mins % 60;
+      return h ? `${h} ч ${m} мин` : `${m} мин`;
+    },
+    kindClass(kind) {
+      const k = kind.toLowerCase();
+      for (const [frag, cls] of KIND_CLASS) if (k.includes(frag)) return cls;
+      return 'k-def';
+    },
+    plural(n) {
+      const m10 = n % 10, m100 = n % 100;
+      if (m10 === 1 && m100 !== 11) return 'пара';
+      if (m10 >= 2 && m10 <= 4 && (m100 < 12 || m100 > 14)) return 'пары';
+      return 'пар';
+    },
+    toggleTheme() {
+      this.theme = this.theme === 'dark' ? 'light' : 'dark';
+      document.documentElement.dataset.theme = this.theme;
+      localStorage.setItem('tt.theme', this.theme);
+    },
     async loadSelectors(kind) {
+      if ((this.selectors[kind] || []).length) return;
       try {
         const r = await fetch(`/api/selectors?kind=${kind}`);
         const j = await r.json();
@@ -256,25 +608,26 @@ createApp({
       } catch (e) { console.error(kind, e); }
     },
     setKind(k) {
-      this.kind = k;
-      this.query = '';
-      this.showDrop = true;
+      this.kind = k; this.query = ''; this.showDrop = true;
+      this.loadSelectors(k);
+      this.$refs.searchEl?.focus();
     },
     setInterval(v) { this.interval = v; this.load(); },
-    pick(o) {
-      this.value = o.id;
-      this.current = o;
-      this.query = o.name;
-      this.showDrop = false;
+    pick(o, silent) {
+      this.value = o.id; this.current = o; this.query = o.name; this.showDrop = false;
+      this.fav = { kind: this.kind, id: o.id, name: o.name };
+      localStorage.setItem('tt.fav', JSON.stringify(this.fav));
+      history.replaceState(null, '', `?kind=${this.kind}&value=${o.id}`);
       this.load();
+      if (!silent) this.say(`запомнил: ${o.name}`);
     },
-    toggleFav() {
-      if (this.isFav) { this.fav = null; localStorage.removeItem('tt.fav'); }
-      else { this.fav = { kind: this.kind, id: this.value, name: this.current.name }; localStorage.setItem('tt.fav', JSON.stringify(this.fav)); }
+    say(t) {
+      this.toast = t;
+      setTimeout(() => this.toast = '', 2200);
     },
     goToday() { this.date = this.todayStr; this.load(); },
     shift(dir) {
-      const step = this.interval === '2' ? 7 : 1;
+      const step = this.interval === '2' ? 7 : this.interval === '3' ? 30 : 1;
       const d = this.parsedDate();
       d.setDate(d.getDate() + dir * step);
       this.date = fmt(d);
@@ -291,10 +644,10 @@ createApp({
     },
     async load() {
       if (!this.value) return;
-      this.loading = true;
-      this.error = '';
+      this.loading = true; this.error = '';
       try {
-        const r = await fetch(`/api/schedule?type=${{ groups: 3, teachers: 1, rooms: 2 }[this.kind]}&value=${encodeURIComponent(this.value)}&date=${this.date}&interval=${this.interval}`);
+        const t = { groups: 3, teachers: 1, rooms: 2 }[this.kind];
+        const r = await fetch(`/api/schedule?type=${t}&value=${encodeURIComponent(this.value)}&date=${this.date}&interval=${this.interval}`);
         const j = await r.json();
         if (j.error) throw new Error(j.error);
         this.days = j.days;
@@ -307,29 +660,28 @@ createApp({
     toMin(t) { const [h, m] = t.split(':').map(Number); return h * 60 + m; },
     isNow(dateStr, l) {
       if (dateStr !== this.todayStr) return false;
-      const now = new Date();
-      const cur = now.getHours() * 60 + now.getMinutes();
+      const n = new Date(); this.tick;
+      const cur = n.getHours() * 60 + n.getMinutes() + n.getSeconds() / 60;
       return cur >= this.toMin(l.start) && cur < this.toMin(l.end);
     },
     isPast(dateStr, l) {
       if (dateStr !== this.todayStr) return false;
-      const now = new Date();
-      return now.getHours() * 60 + now.getMinutes() >= this.toMin(l.end);
+      const n = new Date();
+      return n.getHours() * 60 + n.getMinutes() >= this.toMin(l.end);
+    },
+    leftOf(l) {
+      const n = new Date();
+      const cur = n.getHours() * 60 + n.getMinutes() + n.getSeconds() / 60;
+      const left = Math.max(0, Math.round((this.toMin(l.end) - cur)));
+      return left >= 60 ? `${Math.floor(left / 60)}ч${pad(left % 60)}` : `${left}м`;
     },
     roomsOf(l) { return [...new Set(l.items.flatMap(i => i.rooms))].join(', '); },
     groupsOf(l) { return [...new Set(l.items.flatMap(i => i.groups))].join(', '); },
     teachersOf(l) { return [...new Set(l.items.flatMap(i => i.teachers))].join(', '); },
-    it_degree(l) { const d = l.items.map(i => i.degree).filter(Boolean)[0]; return d ? d + ' — ' : ''; },
+    degOf(l) { const d = l.items.map(i => i.degree).filter(Boolean)[0]; return d ? d + ' — ' : ''; },
     equipOf(l) { return [...new Set(l.equipment || [])]; },
   },
 }).mount('#app');
-
-document.addEventListener('click', e => {
-  if (!e.target.closest('.search')) {
-    const app = document.querySelector('#app').__vue_app__;
-    app._instance.proxy.showDrop = false;
-  }
-});
 </script>
 </body>
 </html>
