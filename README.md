@@ -111,3 +111,16 @@ POST /timetable/get            body: sday=09.11.2026&time_interval=2&type=3&valu
 ## License
 
 MIT
+
+## Детектор изменений расписания
+
+`snapshotter.py` — кроном раз в час:
+1. берёт активные группы бота (`endpoints/activeGroups`)
+2. тянет неделю через локальный api
+3. сравнивает со снапшотом (`snapshots/week_DD.MM.YYYY.json`)
+4. при изменениях дёргает `endpoints/diff` — юзеры группы получают «⚠️ Изменения в расписании»
+
+Крон (VPS):
+```cron
+15 * * * * cd /opt/asu-timetable && TGCLOUD_TOKEN=... /usr/bin/python3 snapshotter.py >> /var/log/rbasu-snap.log 2>&1
+```
