@@ -172,6 +172,24 @@ class Handler(SimpleHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(body)
 
+    def do_HEAD(self):
+        # shields.io и прочие мониторы проверяют HEAD-запросом
+        if urllib.parse.urlparse(self.path).path == "/api/health":
+            ok, detail = True, "ok"
+            try:
+                probe = get_selectors("groups")
+                if not probe.get("items"):
+                    ok, detail = False, "empty groups"
+            except Exception as e:
+                ok, detail = False, str(e)[:200]
+            self.send_response(200 if ok else 503)
+            self.send_header("Content-Type", "application/json; charset=utf-8")
+            self.send_header("Content-Length", "0")
+            self.send_header("Access-Control-Allow-Origin", "*")
+            self.end_headers()
+            return
+        super().do_HEAD()
+
     def do_GET(self):
         parsed = urllib.parse.urlparse(self.path)
         qs = urllib.parse.parse_qs(parsed.query)
