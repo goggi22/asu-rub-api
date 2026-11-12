@@ -37,18 +37,20 @@
 <script src="https://unpkg.com/vue@3.4.21/dist/vue.global.prod.js"></script>
 <style>
 :root {
-  --bg: #1c4839;
+  --bg: #0e2a20;
+  --bg-deep: #0a1f17;
   --mint: #d4f6eb;
   --mint-soft: rgba(212,246,235,.14);
+  --amber: #ffc46b;
   --ink: #123527;
   --text: rgba(255,255,255,.93);
   --muted: rgba(255,255,255,.66);
   --faint: rgba(255,255,255,.42);
   --line: rgba(255,255,255,.13);
   --line-strong: rgba(255,255,255,.26);
-  --panel: rgba(0,0,0,.16);
-  --panel-2: rgba(0,0,0,.26);
-  --btn-bg: #ffffff;
+  --panel: rgba(255,255,255,.05);
+  --panel-2: rgba(255,255,255,.08);
+  --btn-bg: #d4f6eb;
   --btn-ink: #123527;
   --danger: #ffb9ab;
   --r-xl: 26px;
@@ -57,18 +59,20 @@
   --mono: 'JetBrains Mono', ui-monospace, monospace;
   --serif: 'Newsreader', Georgia, serif;
   --hand: 'Caveat', cursive;
-  --shadow: 0 24px 70px rgba(0,0,0,.35);
+  --shadow: 0 24px 70px rgba(0,0,0,.4);
+  --spring: cubic-bezier(.34,1.56,.64,1);
 }
 html[data-theme="light"] {
-  --bg: #e9f8f1;
+  --bg: #dcefe6;
+  --bg-deep: #cde6da;
   --mint: #ffffff;
   --mint-soft: rgba(28,72,57,.08);
   --ink: #16412f;
-  --text: #16412f;
-  --muted: rgba(22,65,47,.68);
-  --faint: rgba(22,65,47,.45);
-  --line: rgba(22,65,47,.12);
-  --line-strong: rgba(22,65,47,.26);
+  --text: #14352a;
+  --muted: rgba(20,53,42,.68);
+  --faint: rgba(20,53,42,.45);
+  --line: rgba(20,53,42,.12);
+  --line-strong: rgba(20,53,42,.26);
   --panel: rgba(255,255,255,.55);
   --panel-2: rgba(255,255,255,.85);
   --btn-bg: #16412f;
@@ -91,36 +95,35 @@ body {
 :focus-visible { outline: 2px solid var(--mint); outline-offset: 2px; border-radius: 4px; }
 html[data-theme="light"] :focus-visible { outline-color: #1c4839; }
 
-/* ---------- фон: мятный свет снизу ---------- */
-.bg-grad {
-  position: fixed; inset: 0; z-index: 0; pointer-events: none;
-  background-color: var(--bg);
-  background-image: radial-gradient(ellipse 126vw 143vh at 50% 130%,
-    #d4f6eb 8%, #b3ded1 22%, #91c7b7 34%, #70af9c 46%, #4e9782 58%, #356f5e 80%, #1c4839 100%);
+/* ---------- живой фон: аврора + зерно ---------- */
+.bg-grad { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; background: var(--bg); }
+.orb { position: absolute; border-radius: 50%; filter: blur(80px); opacity: .55; animation: drift 24s ease-in-out infinite alternate; will-change: transform; }
+.orb-a { width: 46vw; height: 46vw; left: -10vw; top: -14vw; background: radial-gradient(circle, rgba(94,200,164,.55), transparent 65%); }
+.orb-b { width: 42vw; height: 42vw; right: -12vw; top: 10vh; background: radial-gradient(circle, rgba(212,246,235,.32), transparent 65%); animation-delay: -8s; }
+.orb-c { width: 40vw; height: 40vw; left: 26vw; bottom: -18vw; background: radial-gradient(circle, rgba(255,196,107,.14), transparent 65%); animation-delay: -16s; }
+.orb-d { width: 30vw; height: 30vw; right: 18vw; bottom: -8vw; background: radial-gradient(circle, rgba(60,160,220,.16), transparent 65%); animation-delay: -4s; animation-duration: 30s; }
+html[data-theme="light"] .orb { opacity: .4; }
+@keyframes drift {
+  0% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(5vw, 5vh) scale(1.14); }
+  100% { transform: translate(-4vw, -3vh) scale(.92); }
 }
-html[data-theme="light"] .bg-grad {
-  background-image: radial-gradient(ellipse 126vw 143vh at 50% 135%,
-    #ffffff 5%, #e2f6ec 25%, #b9e2d3 50%, #8ecab4 75%, #6fb59e 100%);
-}
-.grain { position: fixed; inset: 0; z-index: 1; pointer-events: none; opacity: .3; mix-blend-mode: overlay;
+.grain { position: fixed; inset: 0; z-index: 1; pointer-events: none; opacity: .32; mix-blend-mode: overlay;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='linear' slope='0.05'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
-/* ---------- лоадер: счётчик процентов ---------- */
-.loader { position: fixed; inset: 0; z-index: 100; background-color: #1c4839;
-  background-image: radial-gradient(ellipse 126vw 143vh at 50% 130%, #d4f6eb 8%, #b3ded1 22%, #91c7b7 34%, #70af9c 46%, #4e9782 58%, #356f5e 80%, #1c4839 100%);
-  transition: opacity .7s ease, visibility .7s; }
-.loader.gone { opacity: 0; visibility: hidden; }
+/* ---------- лоадер ---------- */
+.loader { position: fixed; inset: 0; z-index: 100; background: #0e2a20; transition: opacity .7s ease, visibility .7s; }
 .loader .n { position: absolute; left: 2.1vw; bottom: 3.7vh; font: 800 clamp(90px, 16.6vh, 210px)/0.9 'Inter'; letter-spacing: -.03em; color: #fff; font-variant-numeric: tabular-nums; }
-.loader .cap { position: absolute; left: 2.1vw; bottom: calc(3.7vh + clamp(90px,16.6vh,210px) + 14px);
-  font: 600 13px var(--mono); color: rgba(255,255,255,.55); }
+.loader .cap { position: absolute; left: 2.1vw; bottom: calc(3.7vh + clamp(90px,16.6vh,210px) + 14px); font: 600 13px var(--mono); color: rgba(255,255,255,.55); }
 .loader .brandmark { position: absolute; top: 26px; left: 2.1vw; font: 700 13px 'Inter'; color: rgba(255,255,255,.62); }
+.loader.gone { opacity: 0; visibility: hidden; }
 
 /* ---------- гигантский живой счётчик ---------- */
-.bigcount { position: fixed; left: 2.1vw; bottom: 3.2vh; z-index: 3; pointer-events: none; user-select: none;
-  transition: opacity .5s; }
+.bigcount { position: fixed; left: 2.1vw; bottom: 3.2vh; z-index: 3; pointer-events: none; user-select: none; transition: opacity .5s; }
 .bigcount.dim { opacity: 0; }
-.bigcount .n { font: 800 clamp(64px, 11.5vh, 150px)/0.92 'Inter'; letter-spacing: -.03em; color: var(--text); font-variant-numeric: tabular-nums; text-shadow: 0 10px 44px rgba(0,0,0,.28); }
+.bigcount .n { font: 800 clamp(64px, 11.5vh, 150px)/0.92 'Inter'; letter-spacing: -.03em; color: var(--text); font-variant-numeric: tabular-nums; text-shadow: 0 10px 44px rgba(0,0,0,.3); transition: transform .18s var(--spring); }
+.bigcount.pulse .n { transform: scale(1.045); }
 .bigcount .cap { margin-top: 8px; font: 500 14px 'Inter'; color: var(--muted); }
 
 /* ---------- каркас ---------- */
@@ -128,14 +131,16 @@ html[data-theme="light"] .bg-grad {
 
 .topbar { display: flex; align-items: center; gap: 14px; margin-bottom: clamp(26px, 6vh, 64px); }
 .brand { display: flex; align-items: center; gap: 12px; font: 700 14px/1 'Inter'; color: var(--muted); margin-right: auto; }
-.brand .dot { width: 36px; height: 36px; border-radius: 12px; background: rgba(0,0,0,.22); border: 1px solid var(--line-strong); display: grid; place-items: center; font: 800 13px 'Inter'; color: var(--mint); }
-html[data-theme="light"] .brand .dot { background: rgba(255,255,255,.7); color: #1c4839; }
+.brand .dot { width: 36px; height: 36px; border-radius: 12px; background: linear-gradient(140deg, #2e6b52, #1c4839); border: 1px solid rgba(212,246,235,.25); display: grid; place-items: center; font: 800 13px 'Inter'; color: var(--mint); box-shadow: 0 6px 20px rgba(0,0,0,.35); }
+html[data-theme="light"] .brand .dot { background: linear-gradient(140deg, #1c4839, #16412f); }
 .topbar .mini-clock { font: 600 13px var(--mono); color: var(--faint); }
-.pill-btn { height: 40px; padding: 0 18px; border-radius: 100px; border: 1px solid var(--line-strong); background: transparent; color: var(--text); font: 600 13px 'Inter'; cursor: pointer; transition: background .2s; }
-.pill-btn:hover { background: var(--panel); }
-.pill-btn.solid { background: var(--btn-bg); color: var(--btn-ink); border-color: transparent; }
-.pill-btn.solid:hover { filter: brightness(1.06); background: var(--btn-bg); }
+.pill-btn { height: 40px; padding: 0 18px; border-radius: 100px; border: 1px solid var(--line-strong); background: transparent; color: var(--text); font: 600 13px 'Inter'; cursor: pointer; transition: transform .25s var(--spring), background .2s, border .2s; }
+.pill-btn:hover { background: var(--panel-2); transform: translateY(-2px); }
+.pill-btn:active { transform: translateY(0) scale(.97); }
+.pill-btn.solid { background: var(--btn-bg); color: var(--btn-ink); border-color: transparent; box-shadow: 0 8px 26px rgba(212,246,235,.22); }
+.pill-btn.solid:hover { filter: brightness(1.05); background: var(--btn-bg); }
 .pill-btn.icon { width: 40px; padding: 0; font-size: 16px; }
+.pill-btn.icon:hover { transform: translateY(-2px) rotate(14deg); }
 
 /* ---------- hero ---------- */
 .hero { margin-bottom: clamp(24px, 4vh, 42px); }
@@ -161,11 +166,12 @@ html[data-theme="light"] .search input:focus { border-color: rgba(28,72,57,.5); 
 .drop button { display: flex; width: 100%; align-items: baseline; gap: 12px; padding: 13px 18px; border: 0; background: transparent; color: var(--text); font: 500 15px 'Inter'; text-align: left; cursor: pointer; transition: background .15s; }
 .drop button:hover, .drop button.sel { background: var(--mint-soft); }
 .drop .id { font: 600 12px var(--mono); color: var(--faint); min-width: 40px; }
-.drop .star { margin-left: auto; color: var(--mint); }
-html[data-theme="light"] .drop .star { color: #1c4839; }
+.drop .star { margin-left: auto; color: var(--amber); }
 
-/* ---------- карточка «сейчас» (мятная, инверсная) ---------- */
-.now-card { margin: 18px 0 22px; border-radius: var(--r-xl); background: linear-gradient(150deg, rgba(212,246,235,.97), rgba(179,222,209,.92)); color: var(--ink); padding: 22px 24px; box-shadow: 0 28px 80px rgba(0,0,0,.38); position: relative; overflow: hidden; }
+/* ---------- карточка «сейчас» ---------- */
+.now-card { margin: 18px 0 22px; border-radius: var(--r-xl); background: linear-gradient(150deg, rgba(212,246,235,.97), rgba(179,222,209,.92)); color: var(--ink); padding: 22px 24px; box-shadow: 0 28px 80px rgba(0,0,0,.42); position: relative; overflow: hidden; animation: rise .6s var(--spring) backwards; }
+.now-card::after { content: ''; position: absolute; top: -60%; left: -30%; width: 60%; height: 220%; background: linear-gradient(105deg, transparent, rgba(255,255,255,.5), transparent); transform: rotate(10deg); animation: sheen 5.5s ease-in-out infinite; }
+@keyframes sheen { 0%, 55% { left: -40%; } 100% { left: 130%; } }
 .now-card .label { display: flex; align-items: center; gap: 10px; font: 600 13px 'Inter'; color: rgba(18,53,39,.6); margin-bottom: 12px; }
 .now-card .live-badge { display: inline-flex; align-items: center; gap: 7px; background: rgba(18,53,39,.1); color: var(--ink); padding: 5px 12px; border-radius: 100px; font: 700 12px 'Inter'; }
 .now-card .live-badge::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: #1c4839; animation: pulse2 1.6s infinite; }
@@ -181,17 +187,19 @@ html[data-theme="light"] .drop .star { color: #1c4839; }
 /* ---------- панель управления ---------- */
 .controls { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-bottom: 20px; }
 .controls .seg { margin: 0; }
-.nav-btn { height: 42px; padding: 0 16px; border-radius: 100px; border: 1px solid var(--line-strong); background: transparent; color: var(--text); font: 600 15px 'Inter'; cursor: pointer; transition: background .2s; }
-.nav-btn:hover { background: var(--panel); }
+.nav-btn { height: 42px; padding: 0 16px; border-radius: 100px; border: 1px solid var(--line-strong); background: transparent; color: var(--text); font: 600 15px 'Inter'; cursor: pointer; transition: transform .25s var(--spring), background .2s; }
+.nav-btn:hover { background: var(--panel-2); transform: translateY(-2px); }
+.nav-btn:active { transform: scale(.96); }
 .nav-btn.today { color: var(--mint); border-color: rgba(212,246,235,.5); }
 html[data-theme="light"] .nav-btn.today { color: #1c4839; border-color: rgba(28,72,57,.4); }
 .date-chip { font: 600 14px 'Inter'; color: var(--muted); padding: 0 6px; }
 .date-chip b { color: var(--text); }
 
-/* ---------- дни: широкие строки, не карточки-конфеты ---------- */
+/* ---------- дни ---------- */
 .grid-days { display: grid; gap: 12px; }
 .grid-days.week { grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); }
-.day-card { border: 1px solid var(--line); border-radius: var(--r-lg); background: var(--panel); backdrop-filter: blur(14px); padding: 18px; }
+.day-card { border: 1px solid var(--line); border-radius: var(--r-lg); background: var(--panel); backdrop-filter: blur(14px); padding: 18px; transition: transform .3s var(--spring), border .25s, box-shadow .3s; animation: rise .55s var(--spring) backwards; }
+.day-card:hover { transform: translateY(-4px); border-color: rgba(212,246,235,.4); box-shadow: 0 18px 44px rgba(0,0,0,.3); }
 .day-card.is-today { border-color: rgba(212,246,235,.5); background: linear-gradient(165deg, var(--mint-soft), transparent 55%), var(--panel); }
 .day-head { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 14px; }
 .day-head .wd { font: 700 17px 'Inter'; }
@@ -199,8 +207,8 @@ html[data-theme="light"] .nav-btn.today { color: #1c4839; border-color: rgba(28,
 html[data-theme="light"] .day-card.is-today .wd::after { color: #1c4839; }
 .day-head .dt { font: 500 13.5px 'Inter'; color: var(--faint); }
 
-.lesson { border: 1px solid var(--line); border-radius: var(--r-md); padding: 12px 13px; margin-bottom: 9px; background: var(--panel-2); transition: border .2s; }
-.lesson:hover { border-color: var(--line-strong); }
+.lesson { border: 1px solid var(--line); border-radius: var(--r-md); padding: 12px 13px; margin-bottom: 9px; background: var(--panel-2); transition: border .2s, transform .25s var(--spring); }
+.lesson:hover { border-color: var(--line-strong); transform: translateX(3px); }
 .lesson.now { border-color: rgba(212,246,235,.7); box-shadow: 0 0 0 1px rgba(212,246,235,.3); }
 .lesson.past { opacity: .42; }
 .lesson .time { font: 600 12.5px var(--mono); color: var(--mint); display: flex; justify-content: space-between; }
@@ -216,7 +224,7 @@ html[data-theme="light"] .pill.k-imp { background: #1c4839; color: #e9f8f1; }
 .day-empty { color: var(--faint); font-size: 14px; padding: 10px 0 4px; font-style: italic; font-family: var(--serif); }
 
 /* месяц */
-.month-line { display: flex; gap: 14px; align-items: flex-start; border: 1px solid var(--line); border-radius: var(--r-lg); background: var(--panel); backdrop-filter: blur(14px); padding: 16px 18px; margin-bottom: 12px; }
+.month-line { display: flex; gap: 14px; align-items: flex-start; border: 1px solid var(--line); border-radius: var(--r-lg); background: var(--panel); backdrop-filter: blur(14px); padding: 16px 18px; margin-bottom: 12px; animation: rise .55s var(--spring) backwards; }
 .month-line .wd { min-width: 130px; font: 700 15px 'Inter'; }
 .month-line .wd small { display: block; font: 500 12.5px 'Inter'; color: var(--faint); margin-top: 2px; }
 .month-line .les { font-size: 13.5px; color: var(--muted); }
@@ -236,14 +244,17 @@ footer a { color: var(--muted); text-decoration: none; border-bottom: 1px dotted
 footer a:hover { color: var(--text); }
 footer .hand-note { font: 600 18px var(--hand); color: var(--muted); transform: rotate(-1.5deg); margin-left: auto; }
 
-.toast { position: fixed; bottom: 26px; left: 50%; transform: translate(-50%, 90px); background: var(--mint); color: var(--ink); padding: 13px 24px; border-radius: 100px; font: 600 14px 'Inter'; box-shadow: var(--shadow); z-index: 90; opacity: 0; transition: all .35s cubic-bezier(.2,.9,.3,1.3); }
+.toast { position: fixed; bottom: 26px; left: 50%; transform: translate(-50%, 90px); background: var(--mint); color: var(--ink); padding: 13px 24px; border-radius: 100px; font: 600 14px 'Inter'; box-shadow: var(--shadow); z-index: 90; opacity: 0; transition: all .35s var(--spring); }
 .toast.show { transform: translate(-50%, 0); opacity: 1; }
+
+@keyframes rise { from { opacity: 0; transform: translateY(18px) scale(.98); } to { opacity: 1; transform: none; } }
 
 @media (max-width: 640px) {
   .now-card .big-left { position: static; transform: none; text-align: left; margin-top: 12px; }
   .month-line { flex-direction: column; gap: 8px; }
   .month-line .wd { min-width: 0; }
   .bigcount .n { font-size: clamp(54px, 10vh, 90px); }
+  .now-card::after { display: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -262,7 +273,12 @@ footer .hand-note { font: 600 18px var(--hand); color: var(--muted); transform: 
     <div class="n">{{ Math.floor(progress) }}</div>
   </div>
 
-  <div class="bg-grad"></div>
+  <div class="bg-grad" ref="bgEl">
+    <div class="orb orb-a"></div>
+    <div class="orb orb-b"></div>
+    <div class="orb orb-c"></div>
+    <div class="orb orb-d"></div>
+  </div>
   <div class="grain"></div>
 
   <div class="wrap">
@@ -370,7 +386,7 @@ footer .hand-note { font: 600 18px var(--hand); color: var(--muted); transform: 
       </template>
 
       <template v-else-if="interval === '3'">
-        <div class="month-line" v-for="d in visibleDays" :key="d.date">
+        <div class="month-line" v-for="(d, i) in visibleDays" :key="d.date" :style="{animationDelay: Math.min(i * 55, 500) + 'ms'}">
           <div class="wd">{{ d.weekday }}<small>{{ prettyDate(d.date) }}</small></div>
           <div class="les">
             <template v-if="d.lessons.length">
@@ -384,8 +400,9 @@ footer .hand-note { font: 600 18px var(--hand); color: var(--muted); transform: 
       </template>
 
       <template v-else>
-        <div class="day-card" v-for="d in visibleDays" :key="d.date"
-             :class="{'is-today': d.date === todayStr}">
+        <div class="day-card" v-for="(d, i) in visibleDays" :key="d.date"
+             :class="{'is-today': d.date === todayStr}"
+             :style="{animationDelay: Math.min(i * 70, 600) + 'ms'}">
           <div class="day-head">
             <span class="wd">{{ d.weekday }}</span>
             <span class="dt">{{ prettyDate(d.date) }}</span>
@@ -430,7 +447,7 @@ footer .hand-note { font: 600 18px var(--hand); color: var(--muted); transform: 
   </div>
 
   <!-- гигантский живой счётчик -->
-  <div class="bigcount" :class="{dim: scrolled}" v-if="bigNum" aria-hidden="true">
+  <div class="bigcount" :class="{dim: scrolled, pulse: pulsing}" v-if="bigNum" aria-hidden="true">
     <div class="n">{{ bigNum.n }}</div>
     <div class="cap">{{ bigNum.label }}</div>
   </div>
@@ -459,7 +476,7 @@ createApp({
       showDrop: false, toast: '',
       selectors: { groups: [], teachers: [], rooms: [] },
       fav, clock: '', tick: Date.now(),
-      booting: true, progress: 0, scrolled: false,
+      booting: true, progress: 0, scrolled: false, pulsing: false,
       placeholders: { groups: 'поиск группы, напр. 1235…', teachers: 'поиск преподавателя…', rooms: 'аудитория, напр. 304…' },
     };
   },
@@ -501,7 +518,6 @@ createApp({
       }
       return { type: 'after', progress: null, next: null, lesson: null };
     },
-    // гигантский счётчик слева внизу — живые минуты
     bigNum() {
       this.tick;
       const now = new Date();
@@ -531,6 +547,15 @@ createApp({
       return this.interval === '3' ? this.days.filter(d => d.lessons.length) : this.days;
     },
   },
+  watch: {
+    // пульс цифры при смене значения
+    'bigNum.n'(v, old) {
+      if (v !== old) {
+        this.pulsing = true;
+        setTimeout(() => { this.pulsing = false; }, 190);
+      }
+    },
+  },
   async mounted() {
     document.documentElement.dataset.theme = this.theme;
     this.clockTick();
@@ -538,7 +563,21 @@ createApp({
     document.addEventListener('click', e => { if (!e.target.closest('.search')) this.showDrop = false; });
     window.addEventListener('scroll', () => { this.scrolled = window.scrollY > window.innerHeight * 0.35; }, { passive: true });
 
-    // лоадер: плавный набор процентов, закрытие по готовности
+    // параллакс авроры за мышью
+    if (matchMedia('(pointer:fine)').matches) {
+      const bg = this.$refs.bgEl;
+      let raf = null;
+      window.addEventListener('pointermove', e => {
+        if (raf) return;
+        raf = requestAnimationFrame(() => {
+          const x = e.clientX / innerWidth - .5, y = e.clientY / innerHeight - .5;
+          bg.style.transform = `translate(${x * -18}px, ${y * -14}px) scale(1.05)`;
+          raf = null;
+        });
+      }, { passive: true });
+    }
+
+    // лоадер
     const bootTimer = setInterval(() => {
       this.progress = Math.min(94, this.progress + 1.6 + Math.random() * 3.4);
     }, 110);
