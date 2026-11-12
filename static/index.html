@@ -11,7 +11,7 @@
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Расписание РИ АлтГУ">
 <meta property="og:title" content="Расписание РИ АлтГУ — сегодня, завтра, неделя">
-<meta property="og:description" content="Расписание занятий Рубцовского института (филиала) АлтГУ: группы, преподаватели, аудитории. Живой блок «сейчас идёт пара», напоминания в telegram-боте.">
+<meta property="og:description" content="Расписание занятий Рубцовского института (филиала) АлтГУ: группы, преподаватели, аудитории. Живой счётчик до пары, напоминания в telegram-боте.">
 <meta property="og:url" content="https://asu.rub22.ru/">
 <meta property="og:locale" content="ru_RU">
 <meta name="twitter:card" content="summary">
@@ -30,48 +30,51 @@
   "offers": { "@type": "Offer", "price": "0", "priceCurrency": "RUB" }
 }
 </script>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='24' fill='%234f7cff'/><text x='50' y='68' font-size='48' font-weight='800' text-anchor='middle' fill='white' font-family='sans-serif'>РИ</text></svg>">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='24' fill='%231c4839'/><text x='50' y='68' font-size='46' font-weight='800' text-anchor='middle' fill='%23d4f6eb' font-family='sans-serif'>РИ</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Unbounded:wght@500;700;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400;1,6..72,500&family=Caveat:wght@600;700&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
 <script src="https://unpkg.com/vue@3.4.21/dist/vue.global.prod.js"></script>
 <style>
 :root {
-  --bg: #07080d;
-  --bg-soft: #0c0e16;
-  --panel: rgba(255,255,255,.04);
-  --panel-2: rgba(255,255,255,.07);
-  --line: rgba(255,255,255,.09);
-  --line-strong: rgba(255,255,255,.16);
-  --text: #f2f4fa;
-  --muted: #9aa2b8;
-  --faint: #616a80;
-  --accent: #5d8bff;
-  --accent-2: #a06bff;
-  --accent-3: #4fd8c4;
-  --grad: linear-gradient(120deg, #5d8bff, #a06bff 55%, #4fd8c4);
-  --ok: #3ddc84;
-  --warn: #ffb454;
-  --danger: #ff5c7a;
-  --r-xl: 28px;
+  --bg: #1c4839;
+  --mint: #d4f6eb;
+  --mint-soft: rgba(212,246,235,.14);
+  --ink: #123527;
+  --text: rgba(255,255,255,.93);
+  --muted: rgba(255,255,255,.66);
+  --faint: rgba(255,255,255,.42);
+  --line: rgba(255,255,255,.13);
+  --line-strong: rgba(255,255,255,.26);
+  --panel: rgba(0,0,0,.16);
+  --panel-2: rgba(0,0,0,.26);
+  --btn-bg: #ffffff;
+  --btn-ink: #123527;
+  --danger: #ffb9ab;
+  --r-xl: 26px;
   --r-lg: 20px;
   --r-md: 14px;
-  --r-sm: 10px;
   --mono: 'JetBrains Mono', ui-monospace, monospace;
-  --disp: 'Unbounded', 'Inter', sans-serif;
-  --shadow: 0 20px 60px rgba(0,0,0,.45);
+  --serif: 'Newsreader', Georgia, serif;
+  --hand: 'Caveat', cursive;
+  --shadow: 0 24px 70px rgba(0,0,0,.35);
 }
 html[data-theme="light"] {
-  --bg: #f3f4f9;
-  --bg-soft: #ffffff;
-  --panel: rgba(255,255,255,.72);
-  --panel-2: rgba(255,255,255,.95);
-  --line: rgba(16,20,40,.08);
-  --line-strong: rgba(16,20,40,.16);
-  --text: #171a26;
-  --muted: #5b6478;
-  --faint: #8b93a7;
-  --shadow: 0 20px 50px rgba(30,40,90,.12);
+  --bg: #e9f8f1;
+  --mint: #ffffff;
+  --mint-soft: rgba(28,72,57,.08);
+  --ink: #16412f;
+  --text: #16412f;
+  --muted: rgba(22,65,47,.68);
+  --faint: rgba(22,65,47,.45);
+  --line: rgba(22,65,47,.12);
+  --line-strong: rgba(22,65,47,.26);
+  --panel: rgba(255,255,255,.55);
+  --panel-2: rgba(255,255,255,.85);
+  --btn-bg: #16412f;
+  --btn-ink: #e9f8f1;
+  --danger: #b34a2e;
+  --shadow: 0 20px 50px rgba(28,72,57,.16);
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; }
@@ -84,164 +87,201 @@ body {
   overflow-x: hidden;
   transition: background .4s, color .4s;
 }
+::selection { background: var(--mint); color: var(--ink); }
+:focus-visible { outline: 2px solid var(--mint); outline-offset: 2px; border-radius: 4px; }
+html[data-theme="light"] :focus-visible { outline-color: #1c4839; }
 
-/* ---------- фоновая аврора ---------- */
-.orbs { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
-.orb { position: absolute; border-radius: 50%; filter: blur(90px); opacity: .5; animation: drift 26s ease-in-out infinite alternate; }
-.orb-a { width: 44vw; height: 44vw; left: -12vw; top: -16vw; background: radial-gradient(circle, rgba(93,139,255,.5), transparent 65%); }
-.orb-b { width: 40vw; height: 40vw; right: -10vw; top: 8vh; background: radial-gradient(circle, rgba(160,107,255,.42), transparent 65%); animation-delay: -8s; }
-.orb-c { width: 36vw; height: 36vw; left: 24vw; bottom: -18vw; background: radial-gradient(circle, rgba(79,216,196,.28), transparent 65%); animation-delay: -16s; }
-html[data-theme="light"] .orb { opacity: .3; }
-@keyframes drift {
-  0% { transform: translate(0, 0) scale(1); }
-  50% { transform: translate(6vw, 4vh) scale(1.12); }
-  100% { transform: translate(-3vw, -4vh) scale(.94); }
+/* ---------- фон: мятный свет снизу ---------- */
+.bg-grad {
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background-color: var(--bg);
+  background-image: radial-gradient(ellipse 126vw 143vh at 50% 130%,
+    #d4f6eb 8%, #b3ded1 22%, #91c7b7 34%, #70af9c 46%, #4e9782 58%, #356f5e 80%, #1c4839 100%);
 }
-.grain { position: fixed; inset: 0; z-index: 1; pointer-events: none; opacity: .5; mix-blend-mode: overlay;
+html[data-theme="light"] .bg-grad {
+  background-image: radial-gradient(ellipse 126vw 143vh at 50% 135%,
+    #ffffff 5%, #e2f6ec 25%, #b9e2d3 50%, #8ecab4 75%, #6fb59e 100%);
+}
+.grain { position: fixed; inset: 0; z-index: 1; pointer-events: none; opacity: .3; mix-blend-mode: overlay;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='linear' slope='0.05'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
-/* ---------- каркас ---------- */
-.wrap { position: relative; z-index: 2; max-width: 1180px; margin: 0 auto; padding: 22px clamp(14px, 3vw, 36px) 60px; }
+/* ---------- лоадер: счётчик процентов ---------- */
+.loader { position: fixed; inset: 0; z-index: 100; background-color: #1c4839;
+  background-image: radial-gradient(ellipse 126vw 143vh at 50% 130%, #d4f6eb 8%, #b3ded1 22%, #91c7b7 34%, #70af9c 46%, #4e9782 58%, #356f5e 80%, #1c4839 100%);
+  transition: opacity .7s ease, visibility .7s; }
+.loader.gone { opacity: 0; visibility: hidden; }
+.loader .n { position: absolute; left: 2.1vw; bottom: 3.7vh; font: 800 clamp(90px, 16.6vh, 210px)/0.9 'Inter'; letter-spacing: -.03em; color: #fff; font-variant-numeric: tabular-nums; }
+.loader .cap { position: absolute; left: 2.1vw; bottom: calc(3.7vh + clamp(90px,16.6vh,210px) + 14px);
+  font: 600 13px var(--mono); color: rgba(255,255,255,.55); }
+.loader .brandmark { position: absolute; top: 26px; left: 2.1vw; font: 700 13px 'Inter'; color: rgba(255,255,255,.62); }
 
-.topbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: clamp(28px, 6vh, 64px); }
-.brand { display: flex; align-items: center; gap: 12px; font: 700 13px/1 var(--disp); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
-.brand .dot { width: 34px; height: 34px; border-radius: 11px; background: var(--grad); display: grid; place-items: center; font: 800 13px var(--disp); color: #fff; box-shadow: 0 6px 20px rgba(93,139,255,.4); }
-.theme-btn { width: 40px; height: 40px; border-radius: 13px; border: 1px solid var(--line); background: var(--panel); color: var(--text); font-size: 17px; cursor: pointer; backdrop-filter: blur(14px); transition: transform .2s, background .2s; }
-.theme-btn:hover { transform: translateY(-2px) rotate(12deg); background: var(--panel-2); }
+/* ---------- гигантский живой счётчик ---------- */
+.bigcount { position: fixed; left: 2.1vw; bottom: 3.2vh; z-index: 3; pointer-events: none; user-select: none;
+  transition: opacity .5s; }
+.bigcount.dim { opacity: 0; }
+.bigcount .n { font: 800 clamp(64px, 11.5vh, 150px)/0.92 'Inter'; letter-spacing: -.03em; color: var(--text); font-variant-numeric: tabular-nums; text-shadow: 0 10px 44px rgba(0,0,0,.28); }
+.bigcount .cap { margin-top: 8px; font: 500 14px 'Inter'; color: var(--muted); }
+
+/* ---------- каркас ---------- */
+.wrap { position: relative; z-index: 2; max-width: 1080px; margin: 0 auto; padding: 22px clamp(14px, 3vw, 36px) 60px; }
+
+.topbar { display: flex; align-items: center; gap: 14px; margin-bottom: clamp(26px, 6vh, 64px); }
+.brand { display: flex; align-items: center; gap: 12px; font: 700 14px/1 'Inter'; color: var(--muted); margin-right: auto; }
+.brand .dot { width: 36px; height: 36px; border-radius: 12px; background: rgba(0,0,0,.22); border: 1px solid var(--line-strong); display: grid; place-items: center; font: 800 13px 'Inter'; color: var(--mint); }
+html[data-theme="light"] .brand .dot { background: rgba(255,255,255,.7); color: #1c4839; }
+.topbar .mini-clock { font: 600 13px var(--mono); color: var(--faint); }
+.pill-btn { height: 40px; padding: 0 18px; border-radius: 100px; border: 1px solid var(--line-strong); background: transparent; color: var(--text); font: 600 13px 'Inter'; cursor: pointer; transition: background .2s; }
+.pill-btn:hover { background: var(--panel); }
+.pill-btn.solid { background: var(--btn-bg); color: var(--btn-ink); border-color: transparent; }
+.pill-btn.solid:hover { filter: brightness(1.06); background: var(--btn-bg); }
+.pill-btn.icon { width: 40px; padding: 0; font-size: 16px; }
 
 /* ---------- hero ---------- */
-.hero { margin-bottom: clamp(24px, 4vh, 40px); }
-.hero .kicker { display: inline-flex; align-items: center; gap: 8px; font: 600 11px/1 var(--mono); letter-spacing: .22em; text-transform: uppercase; color: var(--faint); border: 1px solid var(--line); padding: 8px 14px; border-radius: 100px; background: var(--panel); backdrop-filter: blur(10px); }
-.hero .kicker .live { width: 6px; height: 6px; border-radius: 50%; background: var(--ok); box-shadow: 0 0 0 0 rgba(61,220,132,.6); animation: pulse 2s infinite; }
-@keyframes pulse { 70% { box-shadow: 0 0 0 9px rgba(61,220,132,0); } 100% { box-shadow: 0 0 0 0 rgba(61,220,132,0); } }
-.hero h1 { font: 900 clamp(38px, 7.5vw, 84px)/1.02 var(--disp); letter-spacing: -.01em; margin: 20px 0 14px; }
-.hero h1 .grad { background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
-.hero p { color: var(--muted); font-size: clamp(15px, 1.6vw, 17px); max-width: 52ch; }
-.hero .clock { margin-top: 18px; font: 700 clamp(20px, 3vw, 30px)/1 var(--mono); color: var(--faint); letter-spacing: .04em; }
-.hero .clock b { color: var(--text); }
+.hero { margin-bottom: clamp(24px, 4vh, 42px); }
+.hero .kicker { font: 600 14px var(--mono); color: var(--faint); margin-bottom: 26px; }
+.hero h1 { font: 800 clamp(46px, 8.6vw, 104px)/0.98 'Inter'; letter-spacing: -.03em; }
+.hero h1 .hand { font: 700 clamp(42px, 7.4vw, 88px)/1 var(--hand); letter-spacing: 0; color: var(--mint); display: inline-block; transform: rotate(-2.4deg) translateY(.06em); }
+html[data-theme="light"] .hero h1 .hand { color: #1c4839; }
+.hero .lead { margin-top: 18px; font: italic 400 clamp(16px, 1.9vw, 19px)/1.65 var(--serif); color: var(--muted); max-width: 58ch; }
+.hero .cta { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 26px; }
 
 /* ---------- поиск ---------- */
-.search-card { position: relative; border: 1px solid var(--line); background: var(--panel); backdrop-filter: blur(20px); border-radius: var(--r-xl); padding: 14px; box-shadow: var(--shadow); }
-.seg { display: inline-flex; gap: 4px; background: rgba(0,0,0,.22); border: 1px solid var(--line); border-radius: 14px; padding: 4px; margin-bottom: 12px; }
-html[data-theme="light"] .seg { background: rgba(16,20,40,.05); }
-.seg button { border: 0; background: transparent; color: var(--muted); font: 600 13px 'Inter'; padding: 8px 16px; border-radius: 10px; cursor: pointer; transition: all .25s; }
-.seg button.on { background: var(--grad); color: #fff; box-shadow: 0 4px 16px rgba(93,139,255,.35); }
+.search-card { position: relative; border: 1px solid var(--line); background: var(--panel); backdrop-filter: blur(18px); border-radius: var(--r-xl); padding: 14px; box-shadow: var(--shadow); }
+.seg { display: inline-flex; gap: 4px; background: var(--panel-2); border: 1px solid var(--line); border-radius: 100px; padding: 4px; margin-bottom: 12px; }
+.seg button { border: 0; background: transparent; color: var(--muted); font: 600 13px 'Inter'; padding: 8px 17px; border-radius: 100px; cursor: pointer; transition: all .25s; }
+.seg button.on { background: var(--btn-bg); color: var(--btn-ink); font-weight: 700; }
 .search { position: relative; }
-.search input { width: 100%; background: rgba(0,0,0,.25); border: 1px solid var(--line); border-radius: var(--r-md); padding: 16px 46px 16px 18px; color: var(--text); font: 500 16px 'Inter'; outline: none; transition: border .25s, box-shadow .25s; }
-html[data-theme="light"] .search input { background: rgba(255,255,255,.8); }
-.search input:focus { border-color: var(--accent); box-shadow: 0 0 0 4px rgba(93,139,255,.18); }
+.search input { width: 100%; background: var(--panel-2); border: 1px solid var(--line); border-radius: var(--r-md); padding: 16px 46px 16px 18px; color: var(--text); font: 500 16px 'Inter'; outline: none; transition: border .25s, box-shadow .25s; }
+.search input:focus { border-color: rgba(212,246,235,.65); box-shadow: 0 0 0 4px rgba(212,246,235,.14); }
+html[data-theme="light"] .search input:focus { border-color: rgba(28,72,57,.5); box-shadow: 0 0 0 4px rgba(28,72,57,.1); }
 .search input::placeholder { color: var(--faint); }
 .search .icon { position: absolute; right: 16px; top: 50%; transform: translateY(-50%); color: var(--faint); font-size: 17px; pointer-events: none; }
 .drop { position: absolute; left: 0; right: 0; top: calc(100% + 8px); z-index: 40; background: var(--panel-2); backdrop-filter: blur(24px); border: 1px solid var(--line-strong); border-radius: var(--r-lg); overflow: hidden auto; max-height: 340px; box-shadow: var(--shadow); }
 .drop button { display: flex; width: 100%; align-items: baseline; gap: 12px; padding: 13px 18px; border: 0; background: transparent; color: var(--text); font: 500 15px 'Inter'; text-align: left; cursor: pointer; transition: background .15s; }
-.drop button:hover, .drop button.sel { background: rgba(93,139,255,.14); }
+.drop button:hover, .drop button.sel { background: var(--mint-soft); }
 .drop .id { font: 600 12px var(--mono); color: var(--faint); min-width: 40px; }
-.drop .star { margin-left: auto; color: var(--warn); }
+.drop .star { margin-left: auto; color: var(--mint); }
+html[data-theme="light"] .drop .star { color: #1c4839; }
 
-/* ---------- карточка «сейчас» ---------- */
-.now-card { margin: 18px 0 22px; border: 1px solid var(--line-strong); border-radius: var(--r-xl); background: linear-gradient(140deg, rgba(93,139,255,.13), rgba(160,107,255,.09) 50%, rgba(79,216,196,.07)), var(--panel); backdrop-filter: blur(20px); padding: 22px 24px; box-shadow: var(--shadow); position: relative; overflow: hidden; }
-.now-card .label { display: flex; align-items: center; gap: 10px; font: 700 11px/1 var(--mono); letter-spacing: .22em; text-transform: uppercase; color: var(--faint); margin-bottom: 12px; }
-.now-card .live-badge { display: inline-flex; align-items: center; gap: 7px; background: rgba(61,220,132,.14); color: var(--ok); border: 1px solid rgba(61,220,132,.3); padding: 5px 11px; border-radius: 100px; font: 700 10px var(--mono); letter-spacing: .18em; }
-.now-card .live-badge::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--ok); animation: pulse 1.6s infinite; }
-.now-card h3 { font: 700 clamp(19px, 2.6vw, 27px)/1.2 'Inter'; margin-bottom: 4px; }
-.now-card .sub { color: var(--muted); font-size: 14px; display: flex; flex-wrap: wrap; gap: 6px 14px; }
-.now-card .sub b { color: var(--text); font-weight: 600; }
-.now-card .big-left { position: absolute; right: 24px; top: 50%; transform: translateY(-50%); font: 700 clamp(22px, 3.4vw, 34px)/1 var(--mono); color: var(--text); text-align: right; }
-.now-card .big-left small { display: block; font: 600 10px var(--mono); letter-spacing: .2em; color: var(--faint); text-transform: uppercase; margin-bottom: 5px; }
-.progress { height: 6px; border-radius: 100px; background: rgba(127,140,180,.18); margin-top: 16px; overflow: hidden; }
-.progress i { display: block; height: 100%; border-radius: inherit; background: var(--grad); transition: width 1s linear; box-shadow: 0 0 14px rgba(93,139,255,.6); }
+/* ---------- карточка «сейчас» (мятная, инверсная) ---------- */
+.now-card { margin: 18px 0 22px; border-radius: var(--r-xl); background: linear-gradient(150deg, rgba(212,246,235,.97), rgba(179,222,209,.92)); color: var(--ink); padding: 22px 24px; box-shadow: 0 28px 80px rgba(0,0,0,.38); position: relative; overflow: hidden; }
+.now-card .label { display: flex; align-items: center; gap: 10px; font: 600 13px 'Inter'; color: rgba(18,53,39,.6); margin-bottom: 12px; }
+.now-card .live-badge { display: inline-flex; align-items: center; gap: 7px; background: rgba(18,53,39,.1); color: var(--ink); padding: 5px 12px; border-radius: 100px; font: 700 12px 'Inter'; }
+.now-card .live-badge::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: #1c4839; animation: pulse2 1.6s infinite; }
+@keyframes pulse2 { 50% { opacity: .3; } }
+.now-card h3 { font: 700 clamp(19px, 2.6vw, 27px)/1.2 'Inter'; margin-bottom: 4px; letter-spacing: -.01em; }
+.now-card .sub { color: rgba(18,53,39,.72); font-size: 14px; display: flex; flex-wrap: wrap; gap: 6px 16px; }
+.now-card .sub b { color: var(--ink); font-weight: 700; }
+.now-card .big-left { position: absolute; right: 24px; top: 50%; transform: translateY(-50%); font: 700 clamp(22px, 3.4vw, 34px)/1 var(--mono); color: var(--ink); text-align: right; }
+.now-card .big-left small { display: block; font: 600 12px 'Inter'; color: rgba(18,53,39,.5); margin-bottom: 5px; }
+.now-card .progress { height: 6px; border-radius: 100px; background: rgba(18,53,39,.14); margin-top: 16px; overflow: hidden; }
+.now-card .progress i { display: block; height: 100%; border-radius: inherit; background: #1c4839; transition: width 1s linear; }
 
 /* ---------- панель управления ---------- */
 .controls { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-bottom: 20px; }
 .controls .seg { margin: 0; }
-.nav-btn { height: 42px; padding: 0 15px; border-radius: 13px; border: 1px solid var(--line); background: var(--panel); backdrop-filter: blur(12px); color: var(--text); font: 600 15px 'Inter'; cursor: pointer; transition: all .2s; }
-.nav-btn:hover { background: var(--panel-2); transform: translateY(-2px); }
-.nav-btn.today { color: var(--accent); border-color: rgba(93,139,255,.4); }
-.date-chip { font: 700 14px var(--mono); color: var(--muted); padding: 0 6px; }
+.nav-btn { height: 42px; padding: 0 16px; border-radius: 100px; border: 1px solid var(--line-strong); background: transparent; color: var(--text); font: 600 15px 'Inter'; cursor: pointer; transition: background .2s; }
+.nav-btn:hover { background: var(--panel); }
+.nav-btn.today { color: var(--mint); border-color: rgba(212,246,235,.5); }
+html[data-theme="light"] .nav-btn.today { color: #1c4839; border-color: rgba(28,72,57,.4); }
+.date-chip { font: 600 14px 'Inter'; color: var(--muted); padding: 0 6px; }
 .date-chip b { color: var(--text); }
 
-/* ---------- дни ---------- */
-.grid-days { display: grid; gap: 14px; }
-.grid-days.week { grid-template-columns: repeat(auto-fill, minmax(255px, 1fr)); }
-.day-card { border: 1px solid var(--line); border-radius: var(--r-lg); background: var(--panel); backdrop-filter: blur(16px); padding: 18px; transition: transform .25s, border .25s; animation: rise .5s backwards; }
-.day-card:hover { transform: translateY(-3px); border-color: var(--line-strong); }
-.day-card.is-today { border-color: rgba(93,139,255,.45); background: linear-gradient(160deg, rgba(93,139,255,.1), transparent 45%), var(--panel); }
+/* ---------- дни: широкие строки, не карточки-конфеты ---------- */
+.grid-days { display: grid; gap: 12px; }
+.grid-days.week { grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); }
+.day-card { border: 1px solid var(--line); border-radius: var(--r-lg); background: var(--panel); backdrop-filter: blur(14px); padding: 18px; }
+.day-card.is-today { border-color: rgba(212,246,235,.5); background: linear-gradient(165deg, var(--mint-soft), transparent 55%), var(--panel); }
 .day-head { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 14px; }
 .day-head .wd { font: 700 17px 'Inter'; }
-.day-head .dt { font: 600 12px var(--mono); color: var(--faint); }
-.day-card.is-today .wd::after { content: '· сегодня'; color: var(--accent); font-size: 11px; font-weight: 700; margin-left: 7px; letter-spacing: .04em; }
+.day-card.is-today .wd::after { content: 'сегодня'; font-size: 12px; font-weight: 700; margin-left: 8px; color: var(--mint); }
+html[data-theme="light"] .day-card.is-today .wd::after { color: #1c4839; }
+.day-head .dt { font: 500 13.5px 'Inter'; color: var(--faint); }
 
-.lesson { border: 1px solid var(--line); border-radius: var(--r-md); padding: 12px 13px; margin-bottom: 9px; background: rgba(0,0,0,.14); position: relative; transition: background .2s, border .2s; }
-html[data-theme="light"] .lesson { background: rgba(255,255,255,.55); }
-.lesson:hover { background: rgba(127,140,180,.09); }
-.lesson.now { border-color: rgba(61,220,132,.5); box-shadow: 0 0 0 1px rgba(61,220,132,.2), 0 8px 26px rgba(61,220,132,.1); }
-.lesson.past { opacity: .45; }
-.lesson .time { font: 700 12px var(--mono); color: var(--accent); letter-spacing: .02em; display: flex; justify-content: space-between; }
-.lesson .time .left { color: var(--ok); }
+.lesson { border: 1px solid var(--line); border-radius: var(--r-md); padding: 12px 13px; margin-bottom: 9px; background: var(--panel-2); transition: border .2s; }
+.lesson:hover { border-color: var(--line-strong); }
+.lesson.now { border-color: rgba(212,246,235,.7); box-shadow: 0 0 0 1px rgba(212,246,235,.3); }
+.lesson.past { opacity: .42; }
+.lesson .time { font: 600 12.5px var(--mono); color: var(--mint); display: flex; justify-content: space-between; }
+html[data-theme="light"] .lesson .time { color: #1c4839; }
+.lesson .time .left { color: var(--text); }
 .lesson .subj { font: 600 14.5px/1.35 'Inter'; margin: 5px 0 3px; }
-.lesson .meta { color: var(--muted); font-size: 12.5px; display: flex; flex-wrap: wrap; gap: 4px 12px; }
-.pill { display: inline-block; font: 700 10px/1 var(--mono); letter-spacing: .06em; text-transform: uppercase; padding: 4px 9px; border-radius: 100px; margin-top: 7px; }
-.k-lekciya { background: rgba(93,139,255,.15); color: #8fb0ff; }
-.k-praktichesk { background: rgba(160,107,255,.16); color: #c2a3ff; }
-.k-laboratorn { background: rgba(79,216,196,.14); color: #7ce8d6; }
-.k-ekzamen { background: rgba(255,92,122,.15); color: #ff8ba1; }
-.k-zachyot, .k-zachet { background: rgba(255,180,84,.15); color: #ffcd8a; }
-.k-konsultaciya { background: rgba(154,162,184,.16); color: var(--muted); }
-.k-def { background: rgba(127,140,180,.14); color: var(--muted); }
+.lesson .meta { color: var(--muted); font-size: 12.5px; display: flex; flex-wrap: wrap; gap: 4px 14px; }
+.pill { display: inline-block; font: 600 11px/1 'Inter'; padding: 4px 10px; border-radius: 100px; margin-top: 7px; background: rgba(255,255,255,.1); color: var(--muted); border: 1px solid var(--line); }
+html[data-theme="light"] .pill { background: rgba(28,72,57,.06); }
+.pill.k-imp { background: var(--mint); color: var(--ink); border-color: transparent; font-weight: 700; }
+html[data-theme="light"] .pill.k-imp { background: #1c4839; color: #e9f8f1; }
 
-.day-empty { color: var(--faint); font-size: 13.5px; padding: 10px 0 4px; display: flex; align-items: center; gap: 8px; }
-.day-empty::before { content: '☕'; filter: grayscale(1) opacity(.6); }
+.day-empty { color: var(--faint); font-size: 14px; padding: 10px 0 4px; font-style: italic; font-family: var(--serif); }
 
-/* месяц-режим */
-.month-line { display: flex; gap: 14px; align-items: flex-start; border: 1px solid var(--line); border-radius: var(--r-lg); background: var(--panel); backdrop-filter: blur(14px); padding: 16px 18px; margin-bottom: 12px; animation: rise .5s backwards; }
+/* месяц */
+.month-line { display: flex; gap: 14px; align-items: flex-start; border: 1px solid var(--line); border-radius: var(--r-lg); background: var(--panel); backdrop-filter: blur(14px); padding: 16px 18px; margin-bottom: 12px; }
 .month-line .wd { min-width: 130px; font: 700 15px 'Inter'; }
-.month-line .wd small { display: block; font: 600 11px var(--mono); color: var(--faint); margin-top: 2px; }
+.month-line .wd small { display: block; font: 500 12.5px 'Inter'; color: var(--faint); margin-top: 2px; }
 .month-line .les { font-size: 13.5px; color: var(--muted); }
 .month-line .les b { color: var(--text); font-weight: 600; }
 
 /* ---------- состояния ---------- */
 .skeleton { border-radius: var(--r-lg); height: 130px; background: linear-gradient(100deg, var(--panel) 40%, var(--panel-2) 50%, var(--panel) 60%); background-size: 200% 100%; animation: shine 1.4s infinite; border: 1px solid var(--line); }
 @keyframes shine { to { background-position: -200% 0; } }
-.error-box { border: 1px solid rgba(255,92,122,.4); background: rgba(255,92,122,.08); color: #ff8ba1; border-radius: var(--r-md); padding: 16px 18px; font-size: 14px; }
+.error-box { border: 1px solid rgba(255,185,171,.4); background: rgba(255,185,171,.08); color: var(--danger); border-radius: var(--r-md); padding: 16px 18px; font-size: 14px; }
 .empty-hero { text-align: center; padding: 60px 20px; color: var(--faint); }
-.empty-hero .big { font: 700 clamp(28px, 4vw, 44px)/1 var(--disp); margin-bottom: 12px; background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
-
-@keyframes rise { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+.empty-hero .big { font: italic 500 clamp(30px, 4.4vw, 48px)/1.1 var(--serif); margin-bottom: 12px; }
+.empty-hero p { font: italic 400 16px/1.6 var(--serif); }
 
 /* ---------- футер ---------- */
-footer { margin-top: 48px; padding-top: 22px; border-top: 1px solid var(--line); display: flex; flex-wrap: wrap; gap: 12px 26px; align-items: center; color: var(--faint); font-size: 13px; }
+footer { margin-top: 48px; padding-top: 22px; border-top: 1px solid var(--line); display: flex; flex-wrap: wrap; gap: 10px 24px; align-items: center; color: var(--faint); font-size: 13px; }
 footer a { color: var(--muted); text-decoration: none; border-bottom: 1px dotted var(--line-strong); }
 footer a:hover { color: var(--text); }
+footer .hand-note { font: 600 18px var(--hand); color: var(--muted); transform: rotate(-1.5deg); margin-left: auto; }
 
-.toast { position: fixed; bottom: 26px; left: 50%; transform: translate(-50%, 80px); background: var(--panel-2); backdrop-filter: blur(20px); border: 1px solid var(--line-strong); color: var(--text); padding: 13px 22px; border-radius: 100px; font: 600 14px 'Inter'; box-shadow: var(--shadow); z-index: 90; opacity: 0; transition: all .35s cubic-bezier(.2,.9,.3,1.3); }
+.toast { position: fixed; bottom: 26px; left: 50%; transform: translate(-50%, 90px); background: var(--mint); color: var(--ink); padding: 13px 24px; border-radius: 100px; font: 600 14px 'Inter'; box-shadow: var(--shadow); z-index: 90; opacity: 0; transition: all .35s cubic-bezier(.2,.9,.3,1.3); }
 .toast.show { transform: translate(-50%, 0); opacity: 1; }
 
 @media (max-width: 640px) {
   .now-card .big-left { position: static; transform: none; text-align: left; margin-top: 12px; }
   .month-line { flex-direction: column; gap: 8px; }
   .month-line .wd { min-width: 0; }
+  .bigcount .n { font-size: clamp(54px, 10vh, 90px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+  html { scroll-behavior: auto; }
 }
 </style>
 </head>
 <body>
 <div id="app" v-cloak>
-  <div class="orbs"><div class="orb orb-a"></div><div class="orb orb-b"></div><div class="orb orb-c"></div></div>
+  <!-- лоадер -->
+  <div class="loader" :class="{gone: !booting}" aria-hidden="true">
+    <div class="brandmark">Расписание РИ АлтГУ</div>
+    <div class="cap" v-if="progress < 100">загрузка</div>
+    <div class="cap" v-else>готово</div>
+    <div class="n">{{ Math.floor(progress) }}</div>
+  </div>
+
+  <div class="bg-grad"></div>
   <div class="grain"></div>
 
   <div class="wrap">
 
     <div class="topbar">
-      <div class="brand"><span class="dot">РИ</span> АлтГУ · Рубцовск</div>
-      <button class="theme-btn" @click="toggleTheme" :title="theme === 'dark' ? 'светлая' : 'тёмная'">{{ theme === 'dark' ? '☾' : '☀' }}</button>
+      <div class="brand"><span class="dot">РИ</span> АлтГУ, Рубцовск</div>
+      <span class="mini-clock" v-if="clock">{{ clock.slice(0,5) }}</span>
+      <button class="pill-btn icon" @click="toggleTheme" :title="theme === 'dark' ? 'светлая тема' : 'тёмная тема'">{{ theme === 'dark' ? '☾' : '☀' }}</button>
     </div>
 
     <!-- hero -->
     <section class="hero">
-      <div class="kicker"><span class="live"></span> rb.asu.ru · live</div>
-      <h1>Расписание<br><span class="grad">без боли</span></h1>
-      <p>Группы, преподаватели, аудитории — с живым блоком «сейчас», погодой и напоминаниями в telegram. Неофициальный клиент Рубцовского института (филиала) АлтГУ.</p>
-      <div class="clock" v-if="clock"><b>{{ clock.slice(0,5) }}</b>:{{ clock.slice(6) }} <span style="opacity:.5">местное</span></div>
+      <div class="kicker">rb.asu.ru / живые данные</div>
+      <h1>Расписание<br><span class="hand">без боли</span></h1>
+      <p class="lead">Группы, преподаватели и аудитории Рубцовского института. Большая цифра слева внизу — живой счётчик: сколько минут осталось до конца пары или до начала следующей.</p>
+      <div class="cta">
+        <a href="https://t.me/rbasu_schedule_bot" rel="nofollow" style="text-decoration:none"><button class="pill-btn solid">telegram-бот</button></a>
+        <a href="https://github.com/goggi22/asu-rub-api" style="text-decoration:none"><button class="pill-btn">open source</button></a>
+      </div>
     </section>
 
     <!-- поиск -->
@@ -266,21 +306,21 @@ footer a:hover { color: var(--text); }
     </section>
 
     <!-- сейчас -->
-    <section class="now-card" v-if="current && nowState.type !== 'none'" :style="{'animation':'rise .6s'}">
+    <section class="now-card" v-if="current && nowState.type !== 'none'">
       <div class="label">
         <template v-if="nowState.type === 'lesson'"><span class="live-badge">сейчас идёт</span></template>
         <template v-else-if="nowState.type === 'before'"><span>до первой пары</span></template>
-        <template v-else-if="nowState.type === 'break'"><span>окно · до следующей</span></template>
+        <template v-else-if="nowState.type === 'break'"><span>окно, ждём следующую</span></template>
         <template v-else-if="nowState.type === 'free'"><span>сегодня</span></template>
         <template v-else><span>на сегодня всё</span></template>
-        <span style="margin-left:auto; font-weight:600">{{ current.title || current.name }}</span>
+        <span style="margin-left:auto; font-weight:700">{{ current.title || current.name }}</span>
       </div>
 
       <template v-if="nowState.type === 'lesson'">
         <h3>{{ nowState.lesson.subject }}</h3>
         <div class="sub">
           <span v-if="nowState.lesson.kind">{{ nowState.lesson.kind }}</span>
-          <span v-if="nowState.lesson.rooms?.length">ауд. <b>{{ nowState.lesson.rooms.join(', ') }}</b></span>
+          <span v-if="nowState.lesson.rooms?.length">аудитория <b>{{ nowState.lesson.rooms.join(', ') }}</b></span>
         </div>
         <div class="big-left"><small>осталось</small>{{ nowState.left }}</div>
         <div class="progress"><i :style="{width: nowState.progress + '%'}"></i></div>
@@ -289,8 +329,8 @@ footer a:hover { color: var(--text); }
       <template v-else-if="nowState.type === 'before' || nowState.type === 'break'">
         <h3>{{ nowState.next.subject }}</h3>
         <div class="sub">
-          <span>начало <b>{{ nowState.next.start }}</b></span>
-          <span v-if="nowState.next.rooms?.length">ауд. <b>{{ nowState.next.rooms.join(', ') }}</b></span>
+          <span>начало в <b>{{ nowState.next.start }}</b></span>
+          <span v-if="nowState.next.rooms?.length">аудитория <b>{{ nowState.next.rooms.join(', ') }}</b></span>
         </div>
         <div class="big-left"><small>через</small>{{ nowState.left }}</div>
       </template>
@@ -330,12 +370,12 @@ footer a:hover { color: var(--text); }
       </template>
 
       <template v-else-if="interval === '3'">
-        <div class="month-line" v-for="(d, i) in visibleDays" :key="d.date" :style="{animationDelay: (i * 60) + 'ms'}">
+        <div class="month-line" v-for="d in visibleDays" :key="d.date">
           <div class="wd">{{ d.weekday }}<small>{{ prettyDate(d.date) }}</small></div>
           <div class="les">
             <template v-if="d.lessons.length">
               <div v-for="l in d.lessons" :key="l.n">
-                <b>{{ l.start }}</b> — {{ l.items[0].subject }} <span v-if="roomsOf(l)">· {{ roomsOf(l) }}</span>
+                <b>{{ l.start }}</b> — {{ l.items[0].subject }} <span v-if="roomsOf(l)">, {{ roomsOf(l) }}</span>
               </div>
             </template>
             <span v-else style="opacity:.55">свободно</span>
@@ -344,9 +384,8 @@ footer a:hover { color: var(--text); }
       </template>
 
       <template v-else>
-        <div class="day-card" v-for="(d, i) in visibleDays" :key="d.date"
-             :class="{'is-today': d.date === todayStr}"
-             :style="{animationDelay: (i * 70) + 'ms'}">
+        <div class="day-card" v-for="d in visibleDays" :key="d.date"
+             :class="{'is-today': d.date === todayStr}">
           <div class="day-head">
             <span class="wd">{{ d.weekday }}</span>
             <span class="dt">{{ prettyDate(d.date) }}</span>
@@ -360,7 +399,7 @@ footer a:hover { color: var(--text); }
               </div>
               <div class="subj" v-for="it in l.items">{{ it.subject }}</div>
               <div class="meta">
-                <span v-if="roomsOf(l)">ауд. {{ roomsOf(l) }}</span>
+                <span v-if="roomsOf(l)">аудитория {{ roomsOf(l) }}</span>
                 <span v-if="kind !== 'teachers' && teachersOf(l)">{{ teachersOf(l) }}</span>
                 <span v-if="kind === 'teachers' && groupsOf(l)">{{ groupsOf(l) }}</span>
               </div>
@@ -373,22 +412,27 @@ footer a:hover { color: var(--text); }
 
       <div class="empty-hero" v-if="!loading && !error && !visibleDays.length">
         <div class="big">пусто</div>
-        <p>на этот период ничего не нашлось</p>
+        <p>на этот период занятий не нашлось</p>
       </div>
     </section>
 
     <section class="empty-hero" v-else-if="!loading">
-      <div class="big">{{ clock ? 'выбери' : 'загрузка…' }}</div>
-      <p>найди свою группу сверху — например «1235»</p>
+      <div class="big">начни с группы</div>
+      <p>найди свою в поиске выше — например, 1235</p>
     </section>
 
     <footer>
       <span>неофициальный клиент <a href="https://rb.asu.ru" rel="nofollow">rb.asu.ru</a></span>
-      <span>·</span>
-      <a href="https://t.me/" rel="nofollow">telegram-бот с напоминаниями</a>
-      <span>·</span>
+      <a href="https://t.me/rbasu_schedule_bot" rel="nofollow">telegram-бот с напоминаниями</a>
       <a href="https://github.com/goggi22/asu-rub-api">open source</a>
+      <span class="hand-note">сделано в Рубцовске</span>
     </footer>
+  </div>
+
+  <!-- гигантский живой счётчик -->
+  <div class="bigcount" :class="{dim: scrolled}" v-if="bigNum" aria-hidden="true">
+    <div class="n">{{ bigNum.n }}</div>
+    <div class="cap">{{ bigNum.label }}</div>
   </div>
 
   <div class="toast" :class="{show: toast}">{{ toast }}</div>
@@ -399,9 +443,7 @@ const { createApp } = Vue;
 const pad = n => String(n).padStart(2, '0');
 const fmt = d => `${pad(d.getDate())}.${pad(d.getMonth() + 1)}.${d.getFullYear()}`;
 const KIND_CLASS = [
-  ['лекц', 'k-lekciya'], ['практ', 'k-praktichesk'], ['лаб', 'k-laboratorn'],
-  ['экзамен', 'k-ekzamen'], ['зачёт', 'k-zachyot'], ['зачет', 'k-zachet'],
-  ['консульт', 'k-konsultaciya'],
+  ['экзамен', 'k-imp'], ['зачёт', 'k-imp'], ['зачет', 'k-imp'], ['консульт', 'k-imp'],
 ];
 
 createApp({
@@ -417,6 +459,7 @@ createApp({
       showDrop: false, toast: '',
       selectors: { groups: [], teachers: [], rooms: [] },
       fav, clock: '', tick: Date.now(),
+      booting: true, progress: 0, scrolled: false,
       placeholders: { groups: 'поиск группы, напр. 1235…', teachers: 'поиск преподавателя…', rooms: 'аудитория, напр. 304…' },
     };
   },
@@ -458,6 +501,26 @@ createApp({
       }
       return { type: 'after', progress: null, next: null, lesson: null };
     },
+    // гигантский счётчик слева внизу — живые минуты
+    bigNum() {
+      this.tick;
+      const now = new Date();
+      const clockStr = `${pad(now.getHours())}:${pad(now.getMinutes())}`;
+      if (!this.current) return { n: clockStr, label: 'сейчас на часах' };
+      const st = this.nowState;
+      const m = t => { const [h, mm] = t.split(':').map(Number); return h * 60 + mm; };
+      const cur = now.getHours() * 60 + now.getMinutes() + now.getSeconds() / 60;
+      const mins = Math.max(0, Math.ceil(
+        st.type === 'lesson' ? m(this.todayLessons.find(l => cur >= m(l.start) && cur < m(l.end))?.end || '00:00') - cur :
+        (st.type === 'before' || st.type === 'break') ? m(st.next.start) - cur : -1));
+      if (mins < 0) {
+        if (st.type === 'after') return { n: clockStr, label: 'пары закончились' };
+        return { n: clockStr, label: 'пар нет сегодня' };
+      }
+      const n = mins >= 100 ? `${Math.floor(mins / 60)}:${pad(mins % 60)}` : String(mins);
+      const label = st.type === 'lesson' ? 'минут до конца пары' : st.type === 'before' ? 'минут до первой пары' : 'минут до следующей пары';
+      return { n, label };
+    },
     filtered() {
       const q = this.query.trim().toLowerCase();
       const list = this.selectors[this.kind] || [];
@@ -473,6 +536,18 @@ createApp({
     this.clockTick();
     setInterval(() => { this.clock = ''; this.$nextTick(() => this.clockTick()); this.tick = Date.now(); }, 1000);
     document.addEventListener('click', e => { if (!e.target.closest('.search')) this.showDrop = false; });
+    window.addEventListener('scroll', () => { this.scrolled = window.scrollY > window.innerHeight * 0.35; }, { passive: true });
+
+    // лоадер: плавный набор процентов, закрытие по готовности
+    const bootTimer = setInterval(() => {
+      this.progress = Math.min(94, this.progress + 1.6 + Math.random() * 3.4);
+    }, 110);
+    const finish = () => {
+      clearInterval(bootTimer);
+      this.progress = 100;
+      setTimeout(() => { this.booting = false; }, 650);
+    };
+    setTimeout(finish, 1900);
 
     await this.loadSelectors('groups');
     this.loadSelectors('teachers');
@@ -500,9 +575,9 @@ createApp({
       return h ? `${h} ч ${m} мин` : `${m} мин`;
     },
     kindClass(kind) {
-      const k = kind.toLowerCase();
+      const k = (kind || '').toLowerCase();
       for (const [frag, cls] of KIND_CLASS) if (k.includes(frag)) return cls;
-      return 'k-def';
+      return '';
     },
     toggleTheme() {
       this.theme = this.theme === 'dark' ? 'light' : 'dark';
